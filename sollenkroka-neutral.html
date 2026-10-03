@@ -1,0 +1,1502 @@
+<title>Sollenkroka Hem 2.0</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: neutral dark shell. Hero (notes | power gauge with icon satellites | price) -> five coloured statement cards, one per domain -> three detail cards. Single dark look by choice. Colour = domain identity; status colours are separate. */
+:root{
+  color-scheme:dark;
+  --bg:#0b0c0e; --shell-solid:#111215; --card-solid:#17191d; --row:#1f2227; --line:#2b2e35;
+  --ink:#f3f4f6; --ink-2:#a6aab4; --ink-3:#6e737e;
+  --c-el:#4a93ff; --c-heat:#ff8a3d; --c-water:#2ec4d6; --c-climate:#a78bfa; --c-safe:#f472b6; --c-out:#bfd94a; --c-none:#5b606b;
+  --orb1:#3b404b; --orb2:#30343f; --orb3:#3a3944;
+  --sk1:#0b0d12; --sk2:#2c3546; --w1:#1c2331; --w2:#0b0d11; --l1:#232b39; --l2:#161b25; --l3:#0b0e13; --sun:#d3dcee; --au:0;
+  --glass:74%; --on-ink:#111215; --orb-op:.55; --spd:1; --mv:1;
+  --shell:color-mix(in srgb,var(--shell-solid) var(--glass),transparent);
+  --card:color-mix(in srgb,var(--card-solid) var(--glass),transparent);
+  --good:#4ade80; --warn:#facc15; --crit:#f87171;
+  --disp:"Outfit","Figtree",system-ui,sans-serif; --ui:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --t-xs:12px; --t-sm:14px; --t-md:16px; --t-lg:20px;
+  --c:var(--c-el);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+h1,h2,h3,p,ul,dl,dd{margin:0;padding:0}
+body{
+  color:var(--ink);font:400 var(--t-sm)/1.45 var(--ui);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;
+  background:var(--bg);
+  padding-inline:16px;padding-block:24px 40px;
+}
+/* palettes: a = Klar (default), b = Dämpad, c = Neon */
+:root[data-palette="b"]{
+  --bg:#0d0c0b; --shell-solid:#141312; --card-solid:#1b1a18; --row:#242220; --line:#33302c;
+  --ink:#f4f1ec; --ink-2:#b0aaa0; --ink-3:#787268;
+  --c-el:#8fb4e8; --c-heat:#e8a26b; --c-water:#7fd1cf; --c-climate:#b9a8e6; --c-safe:#e59ab6; --c-out:#c9d48c; --c-none:#66615a;
+  --orb1:#463f37; --orb2:#3a3631; --orb3:#40383a;
+  --sk1:#14110e; --sk2:#5c4736; --w1:#30261e; --w2:#0f0d0b; --l1:#30271f; --l2:#1e1814; --l3:#100d0b; --sun:#f2c99c;
+}
+:root[data-palette="c"]{
+  --bg:#07080c; --shell-solid:#0d0f15; --card-solid:#13161f; --row:#1b1f2b; --line:#272c3a;
+  --ink:#f5f7fb; --ink-2:#a3aabb; --ink-3:#687086;
+  --c-el:#00b7ff; --c-heat:#ff6a3d; --c-water:#00e0c6; --c-climate:#b06cff; --c-safe:#ff4fa3; --c-out:#d6ff3d; --c-none:#565d70;
+  --orb1:#26324c; --orb2:#32294c; --orb3:#1e3a42;
+  --sk1:#070812; --sk2:#2d2060; --w1:#171b3c; --w2:#07080c; --l1:#1b1d42; --l2:#101229; --l3:#080914; --sun:#ff7ad1;
+}
+/* d = Aurora (lively background), e = Ljus (light) */
+:root[data-palette="d"]{
+  --bg:#070912; --shell-solid:#0e101a; --card-solid:#151826; --row:#1d2133; --line:#2a2f45;
+  --ink:#f4f6fc; --ink-2:#a7adc4; --ink-3:#6c7391;
+  --c-el:#5b9dff; --c-heat:#ff9248; --c-water:#2fd6c8; --c-climate:#b18cff; --c-safe:#ff6fb5; --c-out:#cfe35a; --c-none:#5a6078;
+  --orb1:#2447c8; --orb2:#7a2fd0; --orb3:#0f9a8c;
+  --sk1:#060a18; --sk2:#104e58; --w1:#0d2a3a; --w2:#070912; --l1:#0f2231; --l2:#0a1622; --l3:#060b14; --sun:#8dffdc; --au:.55;
+  --glass:56%; --orb-op:.62; --spd:.4; --mv:2.4;
+}
+:root[data-palette="e"]{
+  color-scheme:light;
+  --bg:#e9ecf1; --shell-solid:#f6f7f9; --card-solid:#ffffff; --row:#eef0f4; --line:#dcdfe6;
+  --ink:#14171c; --ink-2:#596070; --ink-3:#8b919d; --on-ink:#ffffff;
+  --c-el:#2563eb; --c-heat:#ea580c; --c-water:#0891b2; --c-climate:#7c3aed; --c-safe:#db2777; --c-out:#6f8f0e; --c-none:#a3a8b3;
+  --good:#16a34a; --warn:#b45309; --crit:#dc2626;
+  --orb1:#b9cbf5; --orb2:#dcc6f3; --orb3:#bfe6e0;
+  --sk1:#d9e3f1; --sk2:#f7efe5; --w1:#e2e9f1; --w2:#c6d2df; --l1:#b7c5d6; --l2:#8fa1b6; --l3:#5b7086; --sun:#fff4d8;
+  --glass:66%; --orb-op:.85;
+}
+/* f = Sand: beige, black and grey, near-monochrome with earthy accents */
+:root[data-palette="f"]{
+  color-scheme:light;
+  --bg:#e4dccf; --shell-solid:#efe9df; --card-solid:#f8f4ed; --row:#e9e2d6; --line:#d3cabb;
+  --ink:#191714; --ink-2:#5e584e; --ink-3:#8f887b; --on-ink:#f6f1e8;
+  --c-el:#2a2723; --c-heat:#b0522b; --c-water:#4a6a72; --c-climate:#6f6558; --c-safe:#8b7650; --c-out:#7a7636; --c-none:#b5ad9f;
+  --good:#4d7c3f; --warn:#a2610c; --crit:#b3392b;
+  --orb1:#c7b99f; --orb2:#b9b4aa; --orb3:#d8c6a8;
+  --sk1:#e7dccb; --sk2:#f4e7d1; --w1:#e6dbc8; --w2:#cdbfa7; --l1:#c8b99f; --l2:#a1937c; --l3:#665d4e; --sun:#fff1d0;
+  --glass:62%; --orb-op:.95;
+}
+.k-ink{stroke:var(--ink)} .f-ink{fill:var(--ink)}
+:root[data-bg="none"]{--glass:100%}
+.scene{position:fixed;inset:0;z-index:0;pointer-events:none;display:none}
+.scene svg{display:block;width:100%;height:100%}
+:root[data-bg="scene"] .scene{display:block}
+:root[data-bg="scene"] .orbs{display:none}
+:root[data-bg="scene"]{--glass:68%}
+.ls-l1{fill:var(--l1)} .ls-l2{fill:var(--l2)} .ls-l3{fill:var(--l3)}
+.ls-rip{stroke:var(--sun);stroke-opacity:.12;stroke-width:1}
+.ls-au{animation:ls-au 14s ease-in-out infinite alternate}
+@keyframes ls-au{to{transform:translate(-40px,14px) skewX(-6deg)}}
+@media (prefers-reduced-motion:reduce){.ls-au{animation:none}}
+:root[data-bg="none"] .orbs{display:none}
+.orbs{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.orbs i{position:absolute;border-radius:50%;filter:blur(90px);opacity:var(--orb-op);animation:drift calc(30s*var(--spd)) ease-in-out infinite alternate}
+.orbs i:nth-child(1){width:560px;height:560px;left:-140px;top:-180px;background:var(--orb1)}
+.orbs i:nth-child(2){width:620px;height:620px;right:-160px;top:12%;background:var(--orb2);animation-duration:calc(38s*var(--spd))}
+.orbs i:nth-child(3){width:720px;height:720px;left:28%;bottom:-300px;background:var(--orb3);animation-duration:calc(46s*var(--spd))}
+@keyframes drift{to{transform:translate(calc(70px*var(--mv)),calc(50px*var(--mv))) scale(1.12)}}
+/* drill-down */
+.go{cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.go:hover{border-color:var(--ink-3);box-shadow:0 0 0 1px var(--ink-3)}
+.go:focus-visible{outline:2px solid var(--c-el);outline-offset:2px}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s;z-index:5}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);background:var(--shell-solid);border-left:1px solid var(--line);z-index:6;transform:translateX(100%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s;overflow-y:auto;padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+#dw.open .scrim{opacity:1;pointer-events:auto}
+#dw.open .drawer{transform:none;visibility:visible;transition:transform .25s ease}
+.dhead{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.dhead h2{font:400 var(--t-lg) var(--disp);margin-right:auto}
+.xb{font:500 var(--t-xs) var(--ui);color:var(--ink);background:var(--row);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+.xb:focus-visible{outline:2px solid var(--c-el);outline-offset:2px}
+.dv{display:flex;flex-direction:column;gap:16px}
+.dv h3{font:500 var(--t-md) var(--disp);margin-top:6px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.kp div{background:var(--row);border-radius:12px;padding:10px 12px}
+.kp b{display:block;font:400 var(--t-lg) var(--disp)}
+.kp span{color:var(--ink-2);font-size:var(--t-xs)}
+.rng{display:grid;grid-template-columns:minmax(0,auto) minmax(60px,1fr) auto;gap:10px 12px;align-items:center}
+.rng .t{position:relative;height:8px;border-radius:4px;background:var(--row)}
+.rng .t i{position:absolute;top:0;bottom:0;border-radius:4px;background:var(--c)}
+.rng .t b{position:absolute;top:-3px;width:3px;height:14px;border-radius:2px;background:var(--ink)}
+.rng .val{color:var(--ink-2);font-size:var(--t-xs);white-space:nowrap;text-align:right}
+.days{display:flex;align-items:flex-end;gap:6px;height:130px}
+.days>div{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;font-size:var(--t-xs);color:var(--ink-2)}
+.days .bw{flex:1;width:100%;position:relative;display:flex;align-items:flex-end}
+.days i{width:100%;border-radius:4px 4px 0 0;background:color-mix(in srgb,var(--c) 45%,transparent)}
+.days>div:last-child i{background:var(--c)}
+.days u{position:absolute;left:-3px;right:-3px;height:0;border-top:2px dashed var(--ink)}
+.pair{display:flex;align-items:flex-end;gap:10px 18px;flex-wrap:wrap}
+.pair small{display:block;color:var(--ink-2);font-size:var(--t-xs);margin-bottom:2px}
+.pair b{font:300 28px/1.1 var(--disp);white-space:nowrap}
+.pair b i{font-style:normal;font-size:var(--t-xs);color:var(--ink-2);margin-left:3px}
+.pair .calc b{color:var(--ink-2)}
+.pair .tag{margin-left:auto;padding-bottom:5px}
+.sw{width:36px;height:20px;border-radius:10px;background:var(--line);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--ink-3)}
+.sw.on{background:var(--c)}
+.sw.on::after{left:19px;background:#fff}
+.price{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.price div{background:var(--row);border-radius:10px;padding:8px 10px}
+.price b{display:block;font:400 var(--t-md) var(--disp);white-space:nowrap}
+.price span{font-size:var(--t-xs);color:var(--ink-2)}
+.strip{display:flex;gap:1px;height:16px}
+.strip i{flex:1;border-radius:2px;background:var(--c)}
+.strip i.cur{box-shadow:0 0 0 2px var(--ink);position:relative;z-index:1}
+.lg{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:var(--t-xs);color:var(--ink-2)}
+.lg i{display:inline-block;width:18px;border-top:2px solid var(--c);vertical-align:middle;margin-right:6px}
+.lg i.d{border-top:2px dashed var(--ink-3)}
+.scale.up{background:linear-gradient(90deg,var(--good) 0%,var(--good) 20%,var(--warn) 50%,var(--crit) 100%)}
+@media (prefers-reduced-motion:reduce){.drawer,.scrim,.go{transition:none}}
+.k-el{stroke:var(--c-el)} .k-heat{stroke:var(--c-heat)} .k-water{stroke:var(--c-water)} .k-safe{stroke:var(--c-safe)}
+.f-c{fill:var(--c)}
+.gauge circle{fill:var(--card-solid)}
+.ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;padding:2px}
+.seg button,.tgl{font:500 var(--t-xs) var(--ui);color:var(--ink-2);background:none;border:0;border-radius:999px;padding:5px 11px;cursor:pointer}
+.tgl{border:1px solid var(--line)}
+.seg button[aria-pressed="true"],.tgl[aria-pressed="true"]{background:var(--row);color:var(--ink)}
+.seg button:focus-visible,.tgl:focus-visible{outline:2px solid var(--c-el);outline-offset:2px}
+.d-el{--c:var(--c-el)} .d-heat{--c:var(--c-heat)} .d-water{--c:var(--c-water)} .d-climate{--c:var(--c-climate)} .d-safe{--c:var(--c-safe)} .d-none{--c:var(--c-none)}
+.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ib{width:30px;height:30px;border-radius:9px;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);display:grid;place-items:center;flex:none}
+
+.shell{position:relative;z-index:1;-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px);max-width:1240px;margin-inline:auto;background:var(--shell);border:1px solid var(--line);border-radius:28px;padding:14px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;min-width:0}
+
+/* top */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:6px 10px 2px}
+.brand{display:flex;align-items:center;gap:10px;font:500 var(--t-lg) var(--disp);letter-spacing:-.01em}
+.nav{display:flex;flex-wrap:wrap;gap:4px;margin-inline:auto}
+.nav span{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;color:var(--ink-2)}
+.nav span[aria-current]{background:var(--ink);color:var(--on-ink);font-weight:500}
+.live{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:var(--t-xs)}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--good);animation:pulse 2s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.6)}100%{box-shadow:0 0 0 8px rgba(74,222,128,0)}}
+
+/* hero */
+.hero{padding:22px 24px 24px;display:grid;grid-template-columns:250px minmax(0,1fr) 270px;gap:24px;align-items:start}
+@media (max-width:1000px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero>*{min-width:0}
+.left{display:flex;flex-direction:column;gap:18px}
+.ttl{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.ttl h1{font:400 var(--t-lg) var(--disp)}
+.ttl span{color:var(--warn);font-size:var(--t-xs)}
+.attn{list-style:none;display:flex;flex-direction:column;gap:12px}
+.attn li{display:flex;gap:12px}
+.attn .ib{--c:var(--warn)}
+.attn b{display:block;font-weight:500}
+.attn span{color:var(--ink-2)}
+.lbl{color:var(--ink-2);font-size:var(--t-xs)}
+.phase{display:grid;grid-template-columns:22px minmax(0,1fr) 54px;gap:8px 10px;align-items:center}
+.tr{display:block;height:6px;border-radius:3px;background:var(--row)}
+.tr i{display:block;height:100%;border-radius:3px;background:var(--c)}
+.phase .a{text-align:right}
+
+.gauge{position:relative}
+.gauge svg{display:block;width:100%;height:auto}
+.arc{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--c-el) 55%,transparent));animation:draw 1.4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes draw{from{stroke-dasharray:0 100}}
+.gv{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);text-align:center;white-space:nowrap}
+.gv b{display:block;font:300 clamp(28px,6vw,48px)/1 var(--disp);letter-spacing:-.02em}
+.gv b small{font-size:.38em;color:var(--ink-2);margin-left:4px}
+.gv span{display:block;color:var(--ink-2);margin-top:4px}
+.sat .v{font:400 19px var(--disp);fill:var(--ink)}
+.sat .k{font:400 12px var(--ui);fill:var(--ink-2)}
+.satgrid{display:none;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px}
+.satgrid>div{display:flex;gap:10px;align-items:center;background:var(--row);border-radius:12px;padding:8px 10px}
+.satgrid b{display:block;font:400 var(--t-md) var(--disp)}
+.satgrid span span{color:var(--ink-2);font-size:var(--t-xs)}
+@media (max-width:700px){.sat{display:none}.satgrid{display:grid}}
+
+.right{display:flex;flex-direction:column;gap:14px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.stat>div:first-child{display:flex;justify-content:space-between;align-items:baseline}
+.stat b{font:300 28px/1 var(--disp)}
+.stat b small{font-size:var(--t-xs);color:var(--ink-2);margin-left:4px}
+.tag{font-size:var(--t-xs);color:var(--ink-2);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good)}
+.tag.warn::before{background:var(--warn)}
+.tag.none{color:var(--ink-3)}
+.tag.none::before{background:transparent;border:1.5px dashed var(--ink-3)}
+.plot{position:relative;height:120px;margin-left:26px;border-bottom:1px solid var(--line)}
+.plot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.plot .g{position:absolute;left:-26px;right:0;border-top:1px solid var(--line)}
+.plot .g i{position:absolute;left:0;top:-8px;font-style:normal;font-size:var(--t-xs);color:var(--ink-3)}
+.plot .x{position:absolute;top:0;bottom:0;width:1px;background:var(--ink-3)}
+.plot .p{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--c-el);border:2px solid var(--card-solid);transform:translate(-50%,50%);box-shadow:0 0 10px var(--c-el)}
+.plot .tip{position:absolute;transform:translate(-50%,-14px);background:var(--ink);color:var(--on-ink);font-size:var(--t-xs);padding:3px 8px;border-radius:6px;white-space:nowrap;pointer-events:none}
+.xax{display:flex;justify-content:space-between;margin-left:26px;font-size:var(--t-xs);color:var(--ink-3)}
+.note{color:var(--ink-3);font-size:var(--t-xs)}
+
+/* statements */
+.says{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.say{border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--c) 20%,var(--card)),color-mix(in srgb,var(--c) 5%,var(--card)));
+  border:1px solid color-mix(in srgb,var(--c) 38%,transparent)}
+.say header{display:flex;align-items:center;gap:10px;color:var(--ink-2)}
+.say p{font:400 var(--t-lg)/1.25 var(--disp);text-wrap:balance}
+.say .fig{margin-top:auto;height:56px;display:flex;align-items:flex-end;gap:12px}
+.say .fig>small{color:var(--ink-2);font-size:var(--t-xs)}
+.mini{flex:1;height:100%;display:flex;align-items:flex-end;gap:2px}
+.mini i{flex:1;border-radius:2px 2px 0 0;background:color-mix(in srgb,var(--c) 40%,transparent)}
+.mini i.cur{background:var(--c);box-shadow:0 0 8px var(--c)}
+.tank{position:relative;width:46px;height:56px;border:1.5px solid var(--c);border-radius:8px;overflow:hidden;flex:none}
+.tank .f{position:absolute;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--c) 60%,transparent)}
+.tank svg{position:absolute;left:0;top:-6px;width:200%;height:7px;animation:wave 4s linear infinite}
+@keyframes wave{to{transform:translateX(-50%)}}
+.duo{flex:1;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 10px;align-items:center;font-size:var(--t-xs);color:var(--ink-2)}
+.duo .tr{background:color-mix(in srgb,var(--c) 14%,transparent)}
+.locks{display:flex;gap:6px;flex-wrap:wrap}
+.locks .ib{width:28px;height:28px;border-radius:50%}
+
+/* detail cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:14px}
+.hpm{display:flex;flex-direction:column;gap:8px}
+.hpm>div{display:flex;align-items:center;gap:12px;background:var(--row);border-radius:12px;padding:10px 12px}
+.hpm b{display:block;font:400 var(--t-md) var(--disp);white-space:nowrap}
+.hpm span span{color:var(--ink-2);font-size:var(--t-xs);white-space:nowrap}
+.segs.sm{height:18px;flex:1;min-width:70px;gap:2px}
+.cps text{font:500 11px var(--ui);fill:var(--ink-2);text-anchor:middle}
+.det{padding:18px 20px 20px;display:flex;flex-direction:column;gap:14px}
+.det>header{display:flex;align-items:center;gap:10px}
+.det h2{font:500 var(--t-md) var(--disp);margin-right:auto}
+.pill{background:var(--ink);color:var(--on-ink);border-radius:999px;padding:4px 12px;font-size:var(--t-xs);font-weight:500;white-space:nowrap}
+.big{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.big b{font:300 28px/1 var(--disp)}
+.big b small{font-size:var(--t-xs);color:var(--ink-2);margin-left:4px}
+.big>span{color:var(--ink-2)}
+.big .tag{margin-left:auto}
+.scale{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--crit) 0%,var(--warn) 28%,var(--good) 44%,var(--good) 56%,var(--warn) 72%,var(--crit) 100%)}
+.scale i{position:absolute;top:-4px;bottom:-4px;width:3px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2px var(--card)}
+.ticks{display:flex;justify-content:space-between;font-size:var(--t-xs);color:var(--ink-3);margin-top:6px}
+.kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
+.kv dt{color:var(--ink-2);font-size:var(--t-xs)}
+.kv dd{font:400 var(--t-md) var(--disp)}
+.rows{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:12px;background:var(--row);border-radius:12px;padding:7px 12px 7px 7px}
+.row>span:nth-child(2){min-width:0;margin-right:auto}
+.row em{font-style:normal;color:var(--ink-2);margin-left:8px}
+.stack{display:flex;gap:2px;height:16px}
+.stack i{border-radius:4px;background:var(--c);min-width:4px}
+.leg{display:grid;grid-template-columns:10px minmax(0,1fr) auto auto;gap:8px 10px;align-items:center}
+.leg i{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.leg .k{color:var(--ink-2);text-align:right}
+/* insights */
+.sec{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:10px 10px 0}
+.sec h2{font:400 var(--t-lg) var(--disp);margin-right:auto}
+.sec p{color:var(--ink-2);flex-basis:100%}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chips button{font:500 var(--t-xs) var(--ui);color:var(--ink-2);background:none;border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.chips button:focus-visible{outline:2px solid var(--c-el);outline-offset:2px}
+.ins{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;align-content:start}
+.in{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.in header{display:flex;align-items:center;gap:10px;color:var(--ink-2)}
+.in header .tag{margin-left:auto}
+.tag.info::before{background:var(--ink-3)}
+.in p{font:400 var(--t-md)/1.3 var(--disp);text-wrap:balance}
+.cmp{margin-top:auto;display:grid;grid-template-columns:minmax(0,auto) minmax(40px,1fr) auto;gap:6px 10px;align-items:center;font-size:var(--t-xs);color:var(--ink-2)}
+.cmp .val{color:var(--ink);text-align:right;white-space:nowrap}
+.cmp .tr.b i{opacity:.45}
+
+/* heat pump infographic */
+.hp{padding:20px;display:flex;flex-direction:column;gap:22px}
+.hp>header{display:flex;align-items:center;gap:10px}
+.hp>header h2{font:500 var(--t-md) var(--disp);margin-right:auto}
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.node{position:relative;display:flex;flex-direction:column;gap:4px;padding-right:14px}
+.node .ib{margin-bottom:6px}
+.node b{font:400 var(--t-lg) var(--disp)}
+.node small{color:var(--ink-2);font-size:var(--t-xs)}
+.node:not(:last-child)::after{content:"";position:absolute;top:14px;left:40px;right:10px;height:2px;background:repeating-linear-gradient(90deg,var(--c) 0 8px,transparent 8px 14px);background-size:14px 2px;animation:flowx .8s linear infinite}
+@keyframes flowx{to{background-position:14px 0}}
+.node.off>*{opacity:.45}
+.node.off::after{animation:none;opacity:.35}
+@media (max-width:700px){.flow{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 0}.node::after{display:none}}
+.hp2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.sub{background:var(--row);border-radius:16px;padding:18px 20px;display:flex;gap:16px 22px;align-items:center;flex-wrap:wrap;min-width:0}
+.sub.col{flex-direction:column;align-items:stretch;gap:12px}
+.sub h3{font:500 var(--t-md) var(--disp)}
+.sub .hd{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.dial{position:relative;width:150px;height:150px;flex:none}
+.dial .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.dial .c b{font:300 34px/1 var(--disp)}
+.dial .c span{color:var(--ink-2);font-size:var(--t-xs)}
+.rotor{transform-origin:75px 75px;animation:spin 5s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.facts{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1 1 150px}
+.facts dl{display:grid;grid-template-columns:auto auto;gap:4px 16px;justify-content:start}
+.facts dt{color:var(--ink-2)}
+.segs{display:flex;gap:3px;height:34px}
+.segs i{flex:1;border-radius:3px;background:color-mix(in srgb,var(--c) 16%,transparent)}
+.segs i.on{background:var(--c);box-shadow:0 0 8px var(--c)}
+.src{display:flex;height:10px;border-radius:5px;overflow:hidden;background:color-mix(in srgb,var(--c) 16%,transparent)}
+.src i{background:var(--c)}
+@media (prefers-reduced-motion:reduce){.rotor,.node::after{animation:none!important}}
+.d-in{--c:var(--c-climate)} .d-out{--c:var(--c-out)}
+.zone{background:color-mix(in srgb,var(--c) 10%,transparent);border:1px solid color-mix(in srgb,var(--c) 32%,transparent);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.zh{display:flex;align-items:center;gap:10px}
+.zh>span:nth-child(2){margin-right:auto;min-width:0}
+.zh b{display:block;font:500 var(--t-md) var(--disp)}
+.zh small{color:var(--ink-2);font-size:var(--t-xs)}
+.zh strong{font:300 28px/1 var(--disp);white-space:nowrap}
+.zh strong i{font-style:normal;font-size:var(--t-xs);color:var(--ink-2);margin-left:3px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tags span{background:var(--row);border-radius:999px;padding:3px 10px;font-size:var(--t-xs);color:var(--ink-2);white-space:nowrap}
+.vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+.vs>div{border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;background:color-mix(in srgb,var(--c) 14%,transparent)}
+.vs small{color:var(--ink-2);font-size:var(--t-xs)}
+.vs b{font:300 28px/1.1 var(--disp);white-space:nowrap}
+.vs .mid{background:none;justify-content:center;text-align:center;padding:0 2px}
+.vs .mid b{font:500 var(--t-md) var(--disp)}
+.ntc{display:flex;gap:10px;align-items:flex-start;background:color-mix(in srgb,var(--warn) 12%,transparent);border-radius:12px;padding:10px 12px}
+.ntc .ib{--c:var(--warn)}
+.ntc b{display:block;font-weight:500}
+.ntc span span{color:var(--ink-2)}
+.sub .band{background:var(--line)}
+.sub .kp div{background:var(--card-solid)}
+.scale.kb{background:linear-gradient(90deg,var(--crit) 0 23.5%,var(--warn) 23.5% 41.2%,color-mix(in srgb,var(--warn) 45%,var(--good)) 41.2% 52.9%,var(--good) 52.9% 100%)}
+.stp{display:flex;align-items:center;justify-content:center;gap:22px}
+.stp button{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--card-solid);color:var(--ink);font:300 26px/1 var(--disp);cursor:pointer}
+.stp button:hover{border-color:var(--c)}
+.stp button:disabled{opacity:.35;cursor:default}
+.stp button:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.stp output{font:300 48px/1 var(--disp);min-width:96px;text-align:center}
+.adjbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:color-mix(in srgb,var(--c) 14%,transparent);border-radius:12px;padding:8px 10px}
+.adjbar span{margin-right:auto}
+.sea{position:relative;height:54px;border-radius:12px;overflow:hidden;background:color-mix(in srgb,var(--c) 12%,transparent)}
+.sea svg{position:absolute;left:0;bottom:0;width:200%;height:34px;animation:wave 7s linear infinite}
+.sea svg+svg{height:24px;opacity:.5;animation-duration:11s}
+@media (prefers-reduced-motion:reduce){.sea svg{animation:none}}
+.roomlist{display:flex;flex-direction:column;gap:10px}
+.dot.est{width:7px;height:7px;background:var(--ink-3);border:0;opacity:.55}
+.dot.hi{background:var(--warn)}
+.dl{position:absolute;transform:translate(9px,50%);font-size:var(--t-xs);color:var(--ink);white-space:nowrap;line-height:1}
+.lgd{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:var(--t-xs);color:var(--ink-2)}
+.lgd i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--c);vertical-align:-1px}
+.dd{position:relative;height:160px;margin-left:30px;border-bottom:1px solid var(--line)}
+.dd .g{position:absolute;left:-30px;right:0;border-top:1px solid var(--line)}
+.dd .g i{position:absolute;left:0;top:-8px;font-style:normal;font-size:var(--t-xs);color:var(--ink-3)}
+.dd .bars{position:absolute;inset:0;display:flex;align-items:flex-end;gap:1px}
+.dd .bars i{flex:1;min-width:0;border-radius:2px 2px 0 0;background:var(--c)}
+.dd .bars i.est{opacity:.4}
+.dd .bars i.no{height:0;border-top:1px dashed var(--ink-3);border-radius:0;background:none;opacity:.7}
+.dd .bars i.now{box-shadow:0 0 8px var(--c)}
+.ddx{position:relative;height:16px;margin-left:30px;font-size:var(--t-xs);color:var(--ink-3)}
+.ddx span{position:absolute;top:0}
+/* Energi page */
+#pg-energi .inst{grid-template-columns:repeat(auto-fit,minmax(min(400px,100%),1fr))}
+.pn .tags span{white-space:normal}
+.tm{position:relative;height:120px;border-bottom:1px solid var(--line)}
+.tm .mini{position:absolute;inset:0;height:auto}
+.mini i.lo{background:var(--good)}
+.mini i.hi{background:var(--warn)}
+.avgl{position:absolute;left:0;right:0;border-top:1px dashed var(--ink-3);z-index:1}
+.avgl i{position:absolute;right:0;top:-17px;font-style:normal;font-size:var(--t-xs);color:var(--ink-2)}
+.sc{position:relative;height:190px;margin-left:30px;border-left:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sc .g{position:absolute;left:-30px;right:0;border-top:1px solid var(--line)}
+.sc .g i{position:absolute;left:0;top:-8px;font-style:normal;font-size:var(--t-xs);color:var(--ink-3)}
+.dot{position:absolute;width:10px;height:10px;border-radius:50%;transform:translate(-50%,50%);background:var(--c)}
+.dot.est{background:transparent;border:1.5px solid var(--c);opacity:.65}
+.dot.now{box-shadow:0 0 0 3px var(--card-solid),0 0 0 5px var(--ink)}
+.cal{display:grid;grid-template-rows:repeat(7,18px);grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px}
+.cal i{border-radius:4px;background:var(--c)}
+.cal i.no{background:none;border:1px dashed var(--line)}
+.cal i.m{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.cal span{font-size:var(--t-xs);color:var(--ink-3);line-height:18px}
+.cal span:first-child,.cal span:nth-child(-n+7){grid-column:1}
+/* pages + Klimat page */
+.pg{display:flex;flex-direction:column;gap:14px}
+.nav span{cursor:pointer}
+.nav span:focus-visible{outline:2px solid var(--c-el);outline-offset:2px}
+button.pill{border:0;font:500 var(--t-xs) var(--ui);cursor:pointer}
+.kl{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:1000px){.kl{grid-template-columns:minmax(0,1fr)}}
+.kl>.zone{padding:16px;gap:14px}
+.zone h3,.pn h3{font:500 var(--t-md) var(--disp);display:flex;align-items:center;gap:8px}
+.inst{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+.pn{background:var(--card-solid);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.pn h3 .ic{color:var(--c)}
+.wind{display:flex;gap:14px 18px;align-items:center;flex-wrap:wrap}
+.cmpx{position:relative;width:190px;height:190px;flex:none}
+.cmpx svg{display:block;width:100%;height:100%}
+.cmpx .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.cmpx .c b{font:300 34px/1 var(--disp)}
+.cmpx .c span{color:var(--ink-2);font-size:var(--t-xs)}
+.cmpx text{font:500 12px var(--ui);fill:var(--ink-2);text-anchor:middle}
+.wst{display:grid;grid-template-columns:auto auto;gap:6px 16px;flex:1 1 130px;align-content:center}
+.wst dt{color:var(--ink-2)}
+.wst dd{font:400 var(--t-md) var(--disp);text-align:right;white-space:nowrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.tile{gap:6px}
+.tile>small{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:var(--t-xs)}
+.tile>small .ic{color:var(--c)}
+.tile>b{font:300 26px/1.1 var(--disp);white-space:nowrap}
+.tile>b i{font-style:normal;font-size:var(--t-xs);color:var(--ink-2);margin-left:3px}
+.tile>span{color:var(--ink-2);font-size:var(--t-xs)}
+.tile .scale,.tile .tr{margin-top:6px}
+.band{position:relative;height:8px;border-radius:4px;background:var(--row)}
+.band i{position:absolute;top:0;bottom:0;border-radius:4px;background:var(--good);opacity:.35}
+.band b{position:absolute;top:-3px;width:3px;height:14px;border-radius:2px;background:var(--ink)}
+footer{color:var(--ink-3);font-size:var(--t-xs);padding:2px 10px 4px}
+@media (prefers-reduced-motion:reduce){.arc,.live i,.tank svg,.orbs i{animation:none}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.500 6-11 6-11z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-temp" viewBox="0 0 24 24"><path d="M14 14.800V5a2 2 0 0 0-4 0v9.800a4 4 0 1 0 4 0z"/></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3M3 15h15a3 3 0 1 1-3 3M3 12h7"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.500 20h19zM12 10v4M12 17v.500"/></symbol>
+  <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M4 7l16 10M20 7 4 17"/></symbol>
+  <symbol id="i-heat" viewBox="0 0 24 24"><path d="M7 4c-2 3 2 5 0 8s2 5 0 8M12 4c-2 3 2 5 0 8s2 5 0 8M17 4c-2 3 2 5 0 8s2 5 0 8"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5.500 12.500a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0M12 19.500v.500"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M3 8h12v9H3zM15 11l6-3v9l-6-3"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+</defs></svg>
+
+<div class="scene" aria-hidden="true">
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="ls-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sk1)"/><stop offset="1" style="stop-color:var(--sk2)"/></linearGradient>
+      <linearGradient id="ls-wat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--w1)"/><stop offset="1" style="stop-color:var(--w2)"/></linearGradient>
+      <linearGradient id="ls-ref" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sun)" stop-opacity=".5"/><stop offset="1" style="stop-color:var(--sun)" stop-opacity="0"/></linearGradient>
+      <linearGradient id="ls-aug" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3dffb0" stop-opacity="0"/><stop offset=".35" stop-color="#3dffb0"/><stop offset=".7" stop-color="#9a6bff"/><stop offset="1" stop-color="#9a6bff" stop-opacity="0"/></linearGradient>
+      <filter id="ls-b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18"/></filter>
+      <filter id="ls-b2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="60"/></filter>
+    </defs>
+    <rect x="0" y="0" width="1600" height="530" fill="url(#ls-sky)"/>
+    <path class="ls-au" d="M-100 250 C 250 90, 520 330, 860 170 S 1450 120, 1750 260 L 1750 330 C 1450 210, 1200 300, 860 250 S 300 400, -100 330 Z" fill="url(#ls-aug)" filter="url(#ls-b2)" style="opacity:var(--au,0)"/>
+    <circle cx="1130" cy="455" r="230" filter="url(#ls-b2)" style="fill:var(--sun);opacity:.28"/>
+    <circle cx="1130" cy="455" r="40" filter="url(#ls-b1)" style="fill:var(--sun);opacity:.9"/>
+    <circle cx="1130" cy="455" r="30" style="fill:var(--sun)"/>
+    <g id="ls-far" class="ls-l1"></g>
+    <rect x="0" y="520" width="1600" height="380" fill="url(#ls-wat)"/>
+    <rect x="1080" y="520" width="100" height="330" fill="url(#ls-ref)" filter="url(#ls-b1)"/>
+    <g id="ls-refl" opacity=".28"></g>
+    <g id="ls-rip"></g>
+    <g id="ls-mid" class="ls-l2"></g>
+    <g id="ls-near" class="ls-l3"></g>
+  </svg>
+</div>
+<div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="shell">
+  <div class="top">
+    <div class="brand"><span class="ib d-el"><svg class="ic"><use href="#i-home"/></svg></span>Sollenkroka 1:18</div>
+    <div class="nav" aria-label="Sidor">
+      <span aria-current="page"><svg class="ic"><use href="#i-home"/></svg>Översikt</span>
+      <span><svg class="ic"><use href="#i-bolt"/></svg>Energi</span>
+      <span><svg class="ic"><use href="#i-temp"/></svg>Klimat</span>
+      <span><svg class="ic"><use href="#i-flame"/></svg>Värme &amp; vatten</span>
+      <span><svg class="ic"><use href="#i-lock"/></svg>Säkerhet</span>
+      <span><svg class="ic"><use href="#i-list"/></svg>System</span>
+    </div>
+    <div class="live"><i></i>Live · lör 3 okt 20:35</div>
+    <div class="ctl">
+      <div class="seg" role="group" aria-label="Färgtema">
+        <button type="button" id="pal-a" data-pal="a" aria-pressed="true">Klar</button>
+        <button type="button" id="pal-b" data-pal="b" aria-pressed="false">Dämpad</button>
+        <button type="button" id="pal-c" data-pal="c" aria-pressed="false">Neon</button>
+        <button type="button" id="pal-d" data-pal="d" aria-pressed="false">Aurora</button>
+        <button type="button" id="pal-e" data-pal="e" aria-pressed="false">Ljus</button>
+        <button type="button" id="pal-f" data-pal="f" aria-pressed="false">Sand</button>
+      </div>
+      <button type="button" id="bg-toggle" class="tgl" aria-pressed="true">Bakgrund</button>
+    </div>
+  </div>
+
+  <div class="pg" id="pg-home">
+  <section class="card hero">
+    <div class="left">
+      <div class="ttl"><h1>Huset just nu</h1><span>2 att titta på</span></div>
+      <ul class="attn">
+        <li><span class="ib"><svg class="ic"><use href="#i-alert"/></svg></span><div><b>Tre källor saknar data</b><span>Läckagevakt, nätverk och kameror rapporterar inte.</span></div></li>
+        <li><span class="ib"><svg class="ic"><use href="#i-bolt"/></svg></span><div><b>Högt elpris</b><span>56 % över dagens snitt. Vänta med tung förbrukning.</span></div></li>
+      </ul>
+      <div class="d-el">
+        <p class="lbl" style="margin-bottom:10px">Fasbelastning · säkring 35 A</p>
+        <div class="phase">
+          <span>L1</span><span class="tr"><i style="width:29.7%"></i></span><span class="a">10,4 A</span>
+          <span>L2</span><span class="tr"><i style="width:11.7%"></i></span><span class="a">4,1 A</span>
+          <span>L3</span><span class="tr"><i style="width:50.9%"></i></span><span class="a">17,8 A</span>
+        </div>
+        <p class="lbl" style="margin-top:10px">Högsta fas använder 51 % av säkringen. God marginal.</p>
+      </div>
+      <div class="d-el">
+        <p class="lbl" style="margin-bottom:6px">Effekt i realtid · nytt värde var 5:e sekund · exempel</p>
+        <svg viewBox="0 0 200 40" preserveAspectRatio="none" style="display:block;width:100%;height:44px;overflow:visible" aria-hidden="true"><path id="spk-a" class="f-c" fill-opacity=".16"/><path id="spk-l" class="k-el" fill="none" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div>
+      <div class="gauge">
+        <svg viewBox="0 0 640 330" role="img" aria-label="Effekt nu 7,2 kW. Högsta fas ligger på 51 procent av huvudsäkringen.">
+          <defs><linearGradient id="gg" x1="0" x2="1" y1="0" y2="0"><stop offset="0" style="stop-color:var(--c-water)"/><stop offset=".55" style="stop-color:var(--c-el)"/><stop offset="1" style="stop-color:var(--c-climate)"/></linearGradient></defs>
+          <path d="M25 310 A295 295 0 0 1 615 310" fill="none" class="k-ink" stroke-opacity=".16" stroke-width="16" stroke-dasharray="1.5 5"/>
+          <path d="M105 310 A215 215 0 0 1 535 310" fill="none" class="k-ink" stroke-opacity=".22" stroke-width="1"/>
+          <path d="M220 310 A100 100 0 0 1 420 310 Z" class="f-ink" fill-opacity=".04"/>
+          <path d="M195 310 A125 125 0 0 1 445 310" fill="none" class="k-ink" stroke-opacity=".1" stroke-width="12" stroke-linecap="round"/>
+          <path class="arc" d="M195 310 A125 125 0 0 1 445 310" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="51 100"/>
+          <g fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="118" cy="236.5" r="14" fill="#17191d" class="k-water"/><use href="#i-drop" x="111" y="229.5" width="14" height="14" class="k-water"/>
+            <circle cx="196.7" cy="133.9" r="14" fill="#17191d" class="k-heat"/><use href="#i-flame" x="189.7" y="126.9" width="14" height="14" class="k-heat"/>
+            <circle cx="320" cy="95" r="14" fill="#17191d" class="k-el"/><use href="#i-bolt" x="313" y="88" width="14" height="14" class="k-el"/>
+            <circle cx="443.3" cy="133.9" r="14" fill="#17191d" class="k-el"/><use href="#i-bolt" x="436.3" y="126.9" width="14" height="14" class="k-el"/>
+            <circle cx="522" cy="236.5" r="14" fill="#17191d" class="k-safe"/><use href="#i-lock" x="515" y="229.5" width="14" height="14" class="k-safe"/>
+          </g>
+          <g class="sat" text-anchor="middle">
+            <text class="v" x="72" y="204">92 %</text><text class="k" x="72" y="220">Vattentank</text>
+            <text class="v" x="166" y="92">34,2 °C</text><text class="k" x="166" y="108">Framledning</text>
+            <text class="v" x="320" y="52">86,8 kWh</text><text class="k" x="320" y="68">El idag</text>
+            <text class="v" x="474" y="92">0,92 kr</text><text class="k" x="474" y="108">Elpris nu</text>
+            <text class="v" x="568" y="204">5 av 5</text><text class="k" x="568" y="220">Dörrar låsta</text>
+          </g>
+        </svg>
+        <div class="gv"><b><span data-live="kw">7,2</span><small>kW</small></b><span>Effekt nu</span></div>
+      </div>
+      <div class="satgrid">
+        <div class="d-water"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span><b>92 %</b><span>Vattentank</span></span></div>
+        <div class="d-heat"><span class="ib"><svg class="ic"><use href="#i-flame"/></svg></span><span><b>34,2 °C</b><span>Framledning</span></span></div>
+        <div class="d-el"><span class="ib"><svg class="ic"><use href="#i-bolt"/></svg></span><span><b>86,8 kWh</b><span>El idag</span></span></div>
+        <div class="d-el"><span class="ib"><svg class="ic"><use href="#i-bolt"/></svg></span><span><b>0,92 kr</b><span>Elpris nu</span></span></div>
+        <div class="d-safe"><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span><b>5 av 5</b><span>Dörrar låsta</span></span></div>
+      </div>
+    </div>
+
+    <div class="right d-el">
+      <div class="stat">
+        <div><b>0,92<small>kr/kWh</small></b><span class="tag warn">Högt</span></div>
+        <span class="tr"><i style="width:88%"></i></span>
+      </div>
+      <div>
+        <h2 style="font:400 var(--t-md) var(--disp)">Elpris idag</h2>
+        <p class="lbl">SE3 · lägst 0,06 · snitt 0,59 · högst 1,04</p>
+      </div>
+      <div class="plot" id="plot">
+        <div class="g" style="bottom:83.33%"><i>1,0</i></div>
+        <div class="g" style="bottom:41.67%"><i>0,5</i></div>
+        <svg viewBox="0 0 240 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c-el)" stop-opacity=".45"/><stop offset="1" style="stop-color:var(--c-el)" stop-opacity="0"/></linearGradient></defs>
+          <path id="area" fill="url(#ar)"/>
+          <path id="line" fill="none" class="k-el" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="xax"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+      <p class="note">Timpriser för SE3 från elprisetjustnu.se.</p>
+    </div>
+  </section>
+
+  <section class="says" aria-label="Läget i korthet">
+    <article class="say d-el">
+      <header><span class="ib"><svg class="ic"><use href="#i-bolt"/></svg></span>Energi</header>
+      <p>Elen kostar 56 % mer än dagens snitt just nu</p>
+      <div class="fig"><div class="mini" id="mini"></div></div>
+    </article>
+    <article class="say d-heat">
+      <header><span class="ib"><svg class="ic"><use href="#i-flame"/></svg></span>Värme</header>
+      <p>Värmepumpen går lugnt på 35 % last</p>
+      <div class="fig">
+        <svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="22" fill="none" class="k-heat" stroke-opacity=".2" stroke-width="7"/><circle cx="28" cy="28" r="22" fill="none" class="k-heat" stroke-width="7" stroke-linecap="round" pathLength="100" stroke-dasharray="35 100" transform="rotate(-90 28 28)"/></svg>
+        <small>42 Hz av 120 · elpatron av</small>
+      </div>
+    </article>
+    <article class="say d-water">
+      <header><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span>Vatten</header>
+      <p>Tanken är nästan full, 1 840 liter</p>
+      <div class="fig">
+        <div class="tank"><div class="f" style="height:92%"><svg viewBox="0 0 88 8" preserveAspectRatio="none" aria-hidden="true"><path d="M0 4 Q11 0 22 4 T44 4 T66 4 T88 4 V8 H0Z" class="f-c" fill-opacity=".9"/></svg></div></div>
+        <small>92 % · avsaltningen vilar</small>
+      </div>
+    </article>
+    <article class="say d-climate">
+      <header><span class="ib"><svg class="ic"><use href="#i-temp"/></svg></span>Klimat</header>
+      <p>6,8 °C varmare inne än ute</p>
+      <div class="fig"><div class="duo">
+        <span>Inne</span><span class="tr"><i style="width:84.7%"></i></span><span>25,4 °C</span>
+        <span>Ute</span><span class="tr d-out"><i style="width:62%"></i></span><span>18,6 °C</span>
+      </div></div>
+    </article>
+    <article class="say d-safe">
+      <header><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span>Säkerhet</header>
+      <p>Alla 5 ytterdörrar är låsta</p>
+      <div class="fig"><div class="locks">
+        <span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span>
+      </div></div>
+    </article>
+  </section>
+
+  <div class="cards">
+    <section class="card det d-heat">
+      <header><span class="ib"><svg class="ic"><use href="#i-flame"/></svg></span><h2>Värme</h2><span class="pill">Värmepump ›</span></header>
+      <div class="pair">
+        <div><small>Framledning nu</small><b>34,2<i>°C</i></b></div>
+        <div class="calc"><small>Beräknad</small><b>34,6<i>°C</i></b></div>
+        <span class="tag">−0,4 · normalt</span>
+      </div>
+      <div>
+        <div class="scale"><i style="left:46%"></i></div>
+        <div class="ticks"><span>−5</span><span>−2</span><span>0</span><span>+2</span><span>+5 °C</span></div>
+      </div>
+      <div class="hpm">
+        <div>
+          <svg width="44" height="44" viewBox="0 0 56 56" aria-hidden="true" style="flex:none"><circle cx="28" cy="28" r="22" fill="none" class="k-heat" stroke-opacity=".2" stroke-width="7"/><circle cx="28" cy="28" r="22" fill="none" class="k-heat" stroke-width="7" stroke-linecap="round" pathLength="100" stroke-dasharray="35 100" transform="rotate(-90 28 28)"/></svg>
+          <span><b>42 Hz</b><span>Kompressor · 35 % last</span></span>
+        </div>
+        <div>
+          <span><b>0 av 18 kW</b><span>Elpatron · av</span></span>
+          <div class="segs sm" id="segs2" role="img" aria-label="Elpatronen använder 0 av 18 kW"></div>
+        </div>
+      </div>
+      <p class="lbl">Styrning via Plejd · lägena är exempel</p>
+      <div class="hpm">
+        <div>
+          <span><b>Värmekabel</b><span>Afflux · 18,6 °C ute</span></span>
+          <span class="tag warn" style="margin-left:auto">På</span><i class="sw on" aria-hidden="true"></i>
+        </div>
+        <div>
+          <span><b>Distributionspump</b><span>3,7 kWh idag</span></span>
+          <span class="tag" style="margin-left:auto">Går</span><i class="sw on" aria-hidden="true"></i>
+        </div>
+      </div>
+    </section>
+
+    <section class="card det d-climate" id="rooms">
+      <header><span class="ib"><svg class="ic"><use href="#i-temp"/></svg></span><h2>Inne och ute</h2><span class="pill">Klimat ›</span></header>
+      <div class="zone d-in">
+        <div class="zh"><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span><span><b>Inne</b><small>48 % fukt · känns som 25,2</small></span><strong>25,4<i>°C</i></strong></div>
+        <div class="rng">
+          <span>Varmast · Övre badrum</span><span class="t"><i style="left:0;width:86.5%"></i></span><span class="val">27,3 °C</span>
+          <span>Kallast · Bastuflotte</span><span class="t"><i style="left:0;width:32.5%;background:var(--warn)"></i></span><span class="val">16,5 °C</span>
+        </div>
+        <div class="tags"><span>12 rum</span><span>1 under 17 °C</span></div>
+      </div>
+      <div class="zone d-out">
+        <div class="zh"><span class="ib"><svg class="ic"><use href="#i-sun"/></svg></span><span><b>Ute</b><small>75 % fukt · 3,0 °C varmare än igår</small></span><strong>18,6<i>°C</i></strong></div>
+        <div class="row d-water" style="padding:6px 12px 6px 6px"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span>Havet</span><span style="white-space:nowrap">18,0 °C</span></div>
+        <div class="tags"><span>Vind 2,1 m/s från NV</span><span>Regn idag 0,0 mm</span><span>Sol 06:56–18:09</span><span>Vattenstånd +12 cm</span></div>
+      </div>
+      <div>
+        <p class="lbl" style="margin-bottom:8px">Idag, lägst till högst · samma skala</p>
+        <div class="rng">
+          <span>Inne</span><span class="t d-in"><i style="left:86%;width:3%"></i></span><span class="val">24,4 till 25,6 °C</span>
+          <span>Ute</span><span class="t d-out"><i style="left:51.5%;width:21.5%"></i></span><span class="val">10,6 till 19,2 °C</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card det">
+      <header><span class="ib d-none" style="--c:var(--ink-2)"><svg class="ic"><use href="#i-list"/></svg></span><h2>System</h2><span class="lbl">7 av 10 rapporterar</span></header>
+      <div class="rows">
+        <div class="row d-water"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span>Vatten<em>tank 92 %</em></span><span class="tag">Full</span></div>
+        <div class="row d-safe"><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span>Dörrar<em>5 av 5</em></span><span class="tag">Låst</span></div>
+        <div class="row d-heat"><span class="ib"><svg class="ic"><use href="#i-snow"/></svg></span><span>Frostskydd<em>8,4 och 6,8 °C</em></span><span class="tag">OK</span></div>
+        <div class="row d-heat"><span class="ib"><svg class="ic"><use href="#i-heat"/></svg></span><span>Golvvärme<em>3 av 4 på</em></span><span class="tag">Normal</span></div>
+        <div class="row d-climate"><span class="ib"><svg class="ic"><use href="#i-wind"/></svg></span><span>Luft ute<em>PM2.5 4,1</em></span><span class="tag">God</span></div>
+        <div class="row d-none"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span>Läckagevakt</span><span class="tag none">Ingen data</span></div>
+        <div class="row d-none"><span class="ib"><svg class="ic"><use href="#i-wifi"/></svg></span><span>Nätverk CV10</span><span class="tag none">Ingen data</span></div>
+        <div class="row d-none"><span class="ib"><svg class="ic"><use href="#i-cam"/></svg></span><span>Kameror</span><span class="tag none">Ingen data</span></div>
+      </div>
+    </section>
+
+    <section class="card det d-el">
+      <header><span class="ib"><svg class="ic"><use href="#i-bolt"/></svg></span><h2>El idag</h2><span class="pill">Energi ›</span></header>
+      <div class="big"><b>86,8<small>kWh</small></b><span>ca 135 kr hittills</span></div>
+      <div class="price">
+        <div><b>1,55 kr</b><span>snitt per kWh idag</span></div>
+        <div><b>0,92 kr</b><span>spot nu · högt</span></div>
+        <div><b>ca 6,60 kr/h</b><span>huset just nu, vid spotpris</span></div>
+      </div>
+      <div>
+        <p class="lbl" style="margin-bottom:6px">Elpris över dygnet · mörkare är dyrare</p>
+        <div class="strip" id="strip" role="img" aria-label="Elpris per timme, dyrast kring klockan 18"></div>
+        <div class="ticks"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+      </div>
+      <div>
+        <p class="lbl" style="margin-bottom:6px">Mot fjolåret, enligt faktura · 32 % lägre</p>
+        <div class="cmp">
+          <span>Idag hittills</span><span class="tr"><i style="width:68%"></i></span><span class="val">86,8 kWh</span>
+          <span>Snitt per dygn okt 2025</span><span class="tr b"><i style="width:100%"></i></span><span class="val">128 kWh</span>
+        </div>
+      </div>
+      <p class="lbl">Fördelning per krets</p>
+      <div class="stack" id="stack" role="img" aria-label="Fördelning av dagens förbrukning per krets"></div>
+      <div class="leg" id="leg"></div>
+    </section>
+  </div>
+
+  <div class="sec">
+    <h2>Värt att veta</h2>
+    <div class="chips" id="chips" role="group" aria-label="Filtrera insikter"></div>
+  </div>
+  <section class="ins" id="ins" aria-label="Insikter"></section>
+
+  <section class="card hp d-heat" id="hp">
+    <div class="flow">
+      <div class="node d-water"><span class="ib"><svg class="ic"><use href="#i-snow"/></svg></span><small>Berget</small><b>3,5 °C</b><small>tas ur köldbäraren · in 2,1 · ut −1,4 °C</small></div>
+      <div class="node d-heat"><span class="ib"><svg class="ic"><use href="#i-flame"/></svg></span><small>Kompressor</small><b>42 Hz</b><small>lyfter temperaturen · 35 % last</small></div>
+      <div class="node d-heat off"><span class="ib"><svg class="ic"><use href="#i-bolt"/></svg></span><small>Elpatron</small><b>0 kW</b><small>reserv · inte inkopplad</small></div>
+      <div class="node d-heat"><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span><small>Huset</small><b>34,2 °C</b><small>framledning · varmvatten 52,1 °C</small></div>
+    </div>
+    <div class="hp2">
+      <div class="sub">
+        <div class="dial">
+          <svg viewBox="0 0 150 150" width="150" height="150" aria-hidden="true">
+            <circle cx="75" cy="75" r="62" fill="none" class="k-heat" stroke-opacity=".18" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="75 100" transform="rotate(135 75 75)"/>
+            <circle cx="75" cy="75" r="62" fill="none" class="k-heat" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="26.25 100" transform="rotate(135 75 75)"/>
+            <circle class="rotor k-heat" cx="75" cy="75" r="46" fill="none" stroke-opacity=".5" stroke-width="2" stroke-dasharray="3 9"/>
+          </svg>
+          <div class="c"><b>42</b><span>av 120 Hz</span></div>
+        </div>
+        <div class="facts">
+          <div class="hd"><h3>Kompressor</h3><span class="tag">Går lugnt</span></div>
+          <dl>
+            <dt>Last</dt><dd>35 %</dd>
+            <dt>Drar</dt><dd>1,40 kW el</dd>
+            <dt>Läge</dt><dd>Värmer huset</dd>
+          </dl>
+        </div>
+      </div>
+      <div class="sub col">
+        <div class="hd"><h3>Elpatron</h3><span class="tag">Av · behövs inte</span></div>
+        <div class="big"><b>0<small>av 18 kW</small></b></div>
+        <div>
+          <div class="segs" id="segs" role="img" aria-label="Elpatronen använder 0 av 18 kW"></div>
+          <div class="ticks"><span>0</span><span>9</span><span>18 kW</span></div>
+        </div>
+        <div>
+          <p class="lbl" style="margin-bottom:6px">Värmen kommer just nu från</p>
+          <div class="src"><i style="width:100%"></i></div>
+          <div class="ticks"><span>Kompressor 100 %</span><span>Elpatron 0 %</span></div>
+        </div>
+        <p class="note">Elpatronen ger 1 kWh värme per kWh el. Kompressorn ger normalt 3–5 gånger mer, så varje tänd ruta här är dyr värme.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="pg d-el" id="pg-energi" hidden>
+    <div class="kp">
+      <div><b><span data-live="w">7 170</span> W</b><span>Just nu · realtid var 5:e sekund</span></div>
+      <div><b>86,8 kWh</b><span>Idag · ca 135 kr</span></div>
+      <div><b>0,50 kr</b><span>Snittpris i morgon · 16 % lägre än idag</span></div>
+      <div><b>264 kWh</b><span>Oktober hittills · 32 % under fjolårets takt</span></div>
+      <div><b>37 165 kWh</b><span>2026 hittills · 106 339 kr</span></div>
+    </div>
+    <div class="inst">
+      <div class="pn">
+        <h3><svg class="ic"><use href="#i-bolt"/></svg>Elpris i morgon</h3>
+        <div class="big"><b>0,50<small>kr/kWh</small></b><span>i snitt · som dyrast 1,19 kl 18</span></div>
+        <div class="tm"><div class="avgl" style="bottom:41.9%"><i>snitt 0,50</i></div><div class="mini" id="tmr"></div></div>
+        <div class="xax" style="margin-left:0"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+        <div class="lg"><span><i style="border-top-color:var(--good)"></i>Billigast: kl 00–03 och efter 21</span><span><i style="border-top-color:var(--warn)"></i>Dyrast: kl 16–20</span></div>
+        <p class="note">Riktiga priser för söndag 4 oktober, SE3, från elprisetjustnu.se. Spotpris utan nät, skatt och moms.</p>
+      </div>
+      <div class="pn">
+        <h3><svg class="ic"><use href="#i-temp"/></svg>Förbrukning mot utetemperatur</h3>
+        <p class="lbl">Varje punkt är ett dygn. Kallare ute ger högre förbrukning. Punkter ovanför det skuggade fältet drog mer el än vädret förklarar.</p>
+        <p class="lbl" style="margin-bottom:-4px">kWh per dygn</p>
+        <div class="sc" id="sc" style="height:230px">
+          <div class="g" style="bottom:92.9%"><i>125</i></div><div class="g" style="bottom:57.1%"><i>100</i></div><div class="g" style="bottom:21.4%"><i>75</i></div>
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%"><polygon id="sc-band" class="f-c" fill-opacity=".13"/><path id="sc-line" class="k-el" fill="none" stroke-width="1.5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/></svg>
+        </div>
+        <div class="xax" style="margin-left:30px"><span>10 °C</span><span>14</span><span>18</span><span>22 °C</span></div>
+        <p class="lbl" style="text-align:center;margin-top:-6px">Medeltemperatur ute</p>
+        <div class="lgd"><span><i></i>Uppmätt dygn</span><span><i style="background:var(--warn)"></i>Mer än väntat</span><span><i style="background:var(--ink-3);opacity:.55"></i>Uppskattat dygn</span><span><i style="border-radius:2px;opacity:.3"></i>Normalt för temperaturen</span></div>
+        <div class="tags" id="sc-tags"></div>
+      </div>
+      <div class="pn">
+        <h3><svg class="ic"><use href="#i-list"/></svg>Dygn för dygn</h3>
+        <div class="kp" id="dd-kp"></div>
+        <p class="lbl" style="margin-bottom:-4px">kWh per dygn</p>
+        <div class="dd">
+          <div class="g" style="bottom:76.9%"><i>100</i></div><div class="g" style="bottom:38.5%"><i>50</i></div>
+          <div class="avgl" id="dd-avg"><i>snitt</i></div>
+          <div class="bars" id="dd"></div>
+        </div>
+        <div class="ddx"><span style="left:0">27 juli</span><span style="left:7.1%;display:none"></span><span style="left:20%">augusti</span><span style="left:58%">september</span><span style="right:0">oktober</span></div>
+        <div class="lgd"><span><i style="border-radius:2px"></i>Uppmätt</span><span><i style="border-radius:2px;opacity:.4"></i>Uppskattat</span><span><i style="border-radius:0;height:0;border-top:1px dashed var(--ink-3);background:none;vertical-align:3px"></i>Inget värde</span></div>
+      </div>
+<div class="pn">
+        <h3><svg class="ic"><use href="#i-bolt"/></svg>År för år</h3>
+        <div class="cmp">
+          <span>2023</span><span class="tr b"><i style="width:48.4%"></i></span><span class="val">25 037 kWh</span>
+          <span>2024</span><span class="tr b"><i style="width:78.9%"></i></span><span class="val">40 877 kWh</span>
+          <span>2025</span><span class="tr b"><i style="width:100%"></i></span><span class="val">51 779 kWh</span>
+          <span>2026 hittills</span><span class="tr"><i style="width:71.8%"></i></span><span class="val">37 165 kWh</span>
+        </div>
+        <div class="tags"><span>2026 ligger på 72 % av 2025 med 76 % av året gånget</span><span>Förbrukningen har fördubblats sedan 2023</span></div>
+      </div>
+    </div>
+  </div>
+
+<div class="pg" id="pg-klimat" hidden>
+  <div class="vs">
+    <div class="d-in"><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span><small>Inne · 48 % fukt</small><b>25,4 °C</b></div>
+    <div class="mid"><b>6,8 °C</b><small>varmare inne</small></div>
+    <div class="d-out"><span class="ib"><svg class="ic"><use href="#i-sun"/></svg></span><small>Ute · uppehåll, svag vind från NV</small><b>18,6 °C</b></div>
+  </div>
+
+  <div class="kl">
+    <section class="zone d-out">
+      <div class="zh"><span class="ib"><svg class="ic"><use href="#i-sun"/></svg></span><span><b>Ute</b><small>Väderstationen vid huset</small></span><span class="tag">Uppehåll · svag vind</span></div>
+      <div class="inst">
+        <div class="pn">
+          <h3><svg class="ic"><use href="#i-temp"/></svg>Temperatur</h3>
+          <div class="big"><b>18,6<small>°C</small></b><span>känns som 18,6 · daggpunkt 13,9</span></div>
+          <div class="tags"><span>3,0 °C varmare än igår</span></div>
+          <p class="lbl">Lägst till högst · strecket är medel</p>
+          <div class="rng">
+            <span>Idag</span><span class="t"><i style="left:51.5%;width:21.5%"></i><b style="left:58.25%"></b></span><span class="val">10,6 till 19,2</span>
+            <span>Igår</span><span class="t"><i style="left:51.5%;width:24.25%"></i><b style="left:64%"></b></span><span class="val">10,6 till 20,3</span>
+            <span>Vecka</span><span class="t"><i style="left:51.5%;width:24.25%"></i><b style="left:65.25%"></b></span><span class="val">10,6 till 20,3</span>
+            <span>Månad</span><span class="t"><i style="left:51.5%;width:42.5%"></i><b style="left:68.5%"></b></span><span class="val">10,6 till 27,6</span>
+            <span>År</span><span class="t"><i style="left:5.75%;width:88.25%"></i><b style="left:53.25%"></b></span><span class="val">−7,7 till 27,6</span>
+          </div>
+        </div>
+        <div class="pn">
+          <h3><svg class="ic"><use href="#i-wind"/></svg>Vind</h3>
+          <div class="wind">
+            <div class="cmpx">
+              <svg viewBox="0 0 220 220" role="img" aria-label="Vinden kommer från nordväst, 326 grader, 2,1 meter per sekund">
+                <circle cx="110" cy="110" r="84" fill="none" class="k-ink" stroke-opacity=".28" stroke-width="8" stroke-dasharray="1.2 6.13"/>
+                <circle cx="110" cy="110" r="70" fill="none" class="k-ink" stroke-opacity=".12" stroke-width="1"/>
+                <text x="110" y="16">N</text><text x="208" y="114">Ö</text><text x="110" y="216">S</text><text x="12" y="114">V</text>
+                <g transform="rotate(326 110 110)"><path d="M110 64 l-11 -24 h22 z" style="fill:var(--c)"/><line x1="110" y1="24" x2="110" y2="42" stroke-width="3" stroke-linecap="round" style="stroke:var(--c)"/></g>
+              </svg>
+              <div class="c"><b>2,1</b><span>m/s från NV</span></div>
+            </div>
+            <dl class="wst">
+              <dt>Riktning</dt><dd>NV · 326°</dd>
+              <dt>Byar</dt><dd>2,5 m/s</dd>
+              <dt>Snitt 10 min</dt><dd>1,8 m/s</dd>
+              <dt>Högsta by idag</dt><dd>2,5 m/s</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="inst">
+<div class="pn d-water">
+        <h3><svg class="ic"><use href="#i-drop"/></svg>Regn</h3>
+        <div class="big"><b>0,0<small>mm/h</small></b><span>Uppehåll just nu</span></div>
+        <div class="kp">
+          <div><b>0,0 mm</b><span>Idag</span></div><div><b>0,2 mm</b><span>Den här veckan</span></div>
+          <div><b>12,5 mm</b><span>Månaden</span></div><div><b>157,6 mm</b><span>I år</span></div>
+        </div>
+        <div>
+          <div class="src"><i style="width:8%"></i></div>
+          <div class="ticks"><span>Månaden står för 8 % av årets regn</span><span>157,6 mm</span></div>
+        </div>
+        <div class="ntc"><span class="ib"><svg class="ic"><use href="#i-alert"/></svg></span><span><b>SMHI: risk för vattenbrist</b><span>Grundvatten och vattendrag, gäller sedan 7 juli.</span></span></div>
+      </div>
+
+      <div class="pn d-water">
+  <h3><svg class="ic"><use href="#i-drop"/></svg>Havet</h3>
+  <div class="big"><b>18,0<small>°C</small></b><span>vattentemperatur i viken</span></div>
+  <div class="sea" aria-hidden="true">
+    <svg viewBox="0 0 88 8" preserveAspectRatio="none"><path d="M0 4 Q11 0 22 4 T44 4 T66 4 T88 4 V8 H0Z" class="f-c" fill-opacity=".55"/></svg>
+    <svg viewBox="0 0 88 8" preserveAspectRatio="none"><path d="M0 4 Q11 8 22 4 T44 4 T66 4 T88 4 V8 H0Z" class="f-c"/></svg>
+  </div>
+  <div class="cmp">
+    <span>Havet</span><span class="tr"><i style="width:60%"></i></span><span class="val">18,0 °C</span>
+    <span>Luften</span><span class="tr d-out"><i style="width:62%"></i></span><span class="val">18,6 °C</span>
+  </div>
+  <div class="tags"><span>0,6 °C kallare än luften</span></div>
+</div>
+</div>
+
+<div class="pn d-water">
+          <h3><svg class="ic"><use href="#i-drop"/></svg>Vattenstånd</h3>
+          <div class="big"><b>+12<small>cm</small></b><span>i höjdsystemet RH 2000 · sjunkit 6 cm senaste dygnet</span></div>
+          <div class="plot">
+            <div class="g" style="bottom:66.7%"><i>20</i></div>
+            <div class="g" style="bottom:33.3%"><i>10</i></div>
+            <svg viewBox="0 0 960 100" preserveAspectRatio="none" role="img" aria-label="Vattenstånd senaste dygnet och prognos tre dygn framåt">
+              <path d="M0 45.7 L20 42.3 L40 42.3 L60 40 L80 43.3 L100 45.3 L120 43.3 L140 43.3 L160 39.7 L180 50.7 L200 53.3 L220 57 L240 60" fill="none" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="stroke:var(--c)"/>
+              <path d="M240 60 L360 30 L480 40 L600 13.3 L720 20 L840 10 L950 16.7" fill="none" stroke-width="2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke" stroke-linejoin="round" style="stroke:var(--c)"/>
+            </svg>
+            <div class="x" style="left:25%"></div>
+            <div class="p" style="left:25%;bottom:40%;background:var(--c);box-shadow:0 0 10px var(--c)"></div>
+          </div>
+          <div class="xax"><span>−24 h</span><span>Nu</span><span>+24 h</span><span>+48 h</span><span>+72 h</span></div>
+          <div class="lg"><span><i></i>Uppmätt · Stockholm Frihamnen, 34 km bort</span><span><i style="border-top-style:dashed"></i>Prognos · havsmodell</span></div>
+          <div class="tags"><span>Prognos: stiger cirka 15 cm till tisdag</span></div>
+          <p class="note">Mätvärdena är riktiga, hämtade från SMHI natten mot 4 oktober. Prognosen är ankrad i senaste mätvärdet.</p>
+        </div>
+
+        <div class="tiles">
+        <div class="pn tile"><small><svg class="ic"><use href="#i-list"/></svg>Lufttryck</small><b>1 027,9<i>hPa</i></b><span>Högt · sjunker 0,1 per timme</span></div>
+        <div class="pn tile"><small><svg class="ic"><use href="#i-drop"/></svg>Luftfuktighet</small><b>75<i>%</i></b><span>12 % lägre än igår</span><span class="tr"><i style="width:75%"></i></span></div>
+        <div class="pn tile"><small><svg class="ic"><use href="#i-sun"/></svg>UV-index</small><b>4</b><span>Måttligt</span><div class="scale up"><i style="left:36%"></i></div></div>
+        <div class="pn tile"><small><svg class="ic"><use href="#i-sun"/></svg>Sol upp och ner</small><b>06:56 – 18:09</b><span>11 h 13 min dagsljus · 59 250 lux</span><div class="band" style="margin-top:6px"><i style="left:28.9%;width:46.7%;background:var(--c);opacity:.75"></i><b style="left:85.8%"></b></div><div class="ticks"><span>00</span><span>12</span><span>24</span></div></div>
+        <div class="pn tile"><small><svg class="ic"><use href="#i-bolt"/></svg>Blixtar</small><b>35</b><span>senaste dygnet · närmast 24 km · 0 senaste timmen</span></div>
+        <div class="pn tile"><small><svg class="ic"><use href="#i-wind"/></svg>Luft ute · PM2.5</small><b>4,1<i>µg/m³</i></b><span>God · snitt 24 h 5,0</span><div class="scale up"><i style="left:7.5%"></i></div></div>
+      </div>
+    </section>
+
+    <section class="zone d-in">
+      <div class="zh"><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span><span><b>Inne</b><small>Stora huset</small></span><span class="tag">Normalt</span></div>
+      <div class="big"><b>25,4<small>°C</small></b><span>känns som 25,2</span></div>
+      <div>
+        <p class="lbl" style="margin-bottom:8px">Luftfuktighet 48 % · grönt fält är bra nivå</p>
+        <div class="band"><i style="left:30%;width:30%"></i><b style="left:48%"></b></div>
+        <div class="ticks"><span>0</span><span>30</span><span>60</span><span>100 %</span></div>
+      </div>
+      <div class="kp">
+        <div><b>13,6 °C</b><span>Daggpunkt</span></div>
+        <div><b>24,4 till 25,6</b><span>Idag, lägst till högst</span></div>
+        <div><b>24,3 till 26,0</b><span>Igår, lägst till högst</span></div>
+      </div>
+      <h3>Rum</h3>
+      <div class="tags"><span>12 rum</span><span>Varmast: Övre badrum 27,3 °C</span><span>1 under 17 °C: Bastuflotte</span></div>
+        <div id="rooms-page" class="roomlist"></div>
+      <p class="note">Strecket visar 17 °C. Rum under gränsen markeras. Rumsvärdena lästes av 4 oktober kl 00:41.</p>
+      <h3>Inne mot ute idag</h3>
+      <div class="rng">
+        <span>Inne</span><span class="t"><i style="left:86%;width:3%"></i></span><span class="val">24,4 till 25,6</span>
+        <span>Ute</span><span class="t d-out"><i style="left:51.5%;width:21.5%"></i></span><span class="val">10,6 till 19,2</span>
+      </div>
+      <h3>Luft inne · källaren</h3>
+      <div class="kp"><div><b>Ingen data</b><span>CO₂</span></div><div><b>Ingen data</b><span>Partiklar</span></div></div>
+    </section>
+  </div>
+</div>
+
+<footer>Skiss. Värdena är avlästa från den nuvarande dashboarden 3 oktober kl 20:35.</footer>
+</div>
+
+<div id="dw">
+  <div class="scrim"></div>
+  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dv-title">
+    <div class="dhead"><span class="ib" id="dv-badge"><svg class="ic"><use id="dv-icon" href="#i-bolt"/></svg></span><h2 id="dv-title">Energi</h2><button type="button" class="pill" id="dv-page" hidden>Öppna hela sidan ›</button><button type="button" class="xb" id="dv-close">Stäng</button></div>
+
+    <div class="dv d-el" id="dv-el" data-title="Energi" data-icon="bolt" hidden>
+      <div class="kp">
+        <div><b><span data-live="w">7 170</span> W</b><span>Just nu · realtid</span></div>
+        <div><b>86,8 kWh</b><span>Idag</span></div><div><b>ca 135 kr</b><span>Kostnad idag</span></div>
+        <div><b>0,92 kr</b><span>Pris nu per kWh</span></div><div><b>11 777 W</b><span>Toppeffekt idag</span></div>
+      </div>
+      <h3>Elpris per timme</h3>
+      <div class="mini" id="mini2" style="height:90px;flex:none"></div>
+      <div class="xax" style="margin-left:0"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+      <h3>Förbrukning per dygn</h3>
+      <div class="days" id="days"></div>
+      <p class="note">Streckad linje: fjolårets dygnssnitt för oktober, 128 kWh, räknat från fakturan. Hittills i oktober ligger du 32 % under.</p>
+      <h3>Fasbelastning · 35 A</h3>
+      <div class="phase">
+        <span>L1</span><span class="tr"><i style="width:29.7%"></i></span><span class="a">10,4 A</span>
+        <span>L2</span><span class="tr"><i style="width:11.7%"></i></span><span class="a">4,1 A</span>
+        <span>L3</span><span class="tr"><i style="width:50.9%"></i></span><span class="a">17,8 A</span>
+      </div>
+      <h3>Året hittills</h3>
+      <div class="kp">
+        <div><b>37 165 kWh</b><span>Förbrukning 2026</span></div><div><b>106 339 kr</b><span>Kostnad 2026</span></div><div><b>2,86 kr</b><span>Effektivt pris per kWh</span></div>
+      </div>
+      <div class="stack"><i style="flex:50;--c:var(--c-el)"></i><i style="flex:20;--c:var(--c-heat)"></i><i style="flex:19;--c:var(--c-water)"></i><i style="flex:11;--c:var(--c-climate)"></i></div>
+      <div class="leg">
+        <i style="--c:var(--c-el)"></i><span>Energi (spot)</span><span>53 186 kr</span><span class="k">50 %</span>
+        <i style="--c:var(--c-heat)"></i><span>Energiskatt</span><span>20 905 kr</span><span class="k">20 %</span>
+        <i style="--c:var(--c-water)"></i><span>Elöverföring</span><span>20 673 kr</span><span class="k">19 %</span>
+        <i style="--c:var(--c-climate)"></i><span>Abonnemang</span><span>11 575 kr</span><span class="k">11 %</span>
+      </div>
+    </div>
+
+    <div class="dv d-heat" id="dv-heat" data-title="Värme" data-icon="flame" hidden>
+      <h3>Köldbärare · mot värmepumpens egen larmgräns</h3>
+      <div class="sub col d-water">
+        <div class="hd"><div class="big"><b>−1,4<small>°C ut</small></b><span>in 2,1 °C · berget ger 3,5 °C</span></div><span class="tag">Normalt</span></div>
+        <div>
+          <div class="scale kb"><i style="left:62.4%"></i></div>
+          <div class="ddx" style="margin-left:0;margin-top:6px"><span style="left:0">−12</span><span style="left:23.5%;transform:translateX(-50%)">−8 larm</span><span style="left:41.2%;transform:translateX(-50%)">−5</span><span style="left:52.9%;transform:translateX(-50%)">−3</span><span style="left:70.6%;transform:translateX(-50%)">0</span><span style="right:0">+5 °C</span></div>
+        </div>
+        <div class="kp">
+          <div><b>6,6 °C</b><span>kvar till pumpens larm</span></div>
+          <div><b>−8 °C</b><span>larmgräns i pumpen, meny 7.1.2.8</span></div>
+          <div><b>−3 °C</b><span>här börjar dashboarden varna</span></div>
+        </div>
+        <div class="lgd"><span><i style="background:var(--good)"></i>Normalt: över −3</span><span><i style="background:color-mix(in srgb,var(--warn) 45%,var(--good))"></i>Bevaka: −3 till −5</span><span><i style="background:var(--warn)"></i>Varning: −5 till −8</span><span><i style="background:var(--crit)"></i>Larm: pumpen stoppar kompressorn</span></div>
+        <p class="note">Gränserna räknas från larmtemperaturen i pumpens meny 7.1.2.8, som kan ställas mellan −12 och 15 °C. Skissen antar −8 °C. Kontrollera vad din pump är inställd på.</p>
+      </div>
+      <h3>Klimatjustering</h3>
+      <div class="sub col">
+        <div class="hd"><span class="lbl">Höj eller sänk värmen i huset · nu 25,4 °C inne</span><span class="tag" id="adj-state">Standardläge</span></div>
+        <div class="stp">
+          <button type="button" id="adj-minus" aria-label="Sänk värmen ett steg">−</button>
+          <output id="adj-val">0</output>
+          <button type="button" id="adj-plus" aria-label="Höj värmen ett steg">+</button>
+        </div>
+        <div>
+          <div class="band"><b id="adj-mark" style="left:50%"></b></div>
+          <div class="ticks"><span>−10 kallare</span><span>0</span><span>+10 varmare</span></div>
+        </div>
+        <div class="adjbar" id="adj-bar" hidden><span id="adj-msg"></span><button type="button" class="xb" id="adj-undo">Ångra</button><button type="button" class="pill" id="adj-send">Skicka till värmepumpen</button></div>
+        <p class="note" id="adj-note">Ändringen märks först efter några timmar. I skissen skickas ingenting.</p>
+      </div>
+      <h3>Framledning mot beräknad</h3>
+      <div class="big"><b>34,2<small>°C</small></b><span>beräknad 34,6 · avvikelse −0,4</span></div>
+      <div><div class="scale"><i style="left:46%"></i></div><div class="ticks"><span>−5</span><span>−2</span><span>0</span><span>+2</span><span>+5 °C</span></div></div>
+      <h3>Senaste 24 h · exempelkurva</h3>
+      <div class="plot" style="margin-left:0">
+        <svg viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true"><path id="fl-c" fill="none" class="k-ink" stroke-opacity=".5" stroke-width="2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/><path id="fl-a" fill="none" class="k-heat" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="ticks" style="margin-top:0"><span>−24 h</span><span>−12 h</span><span>Nu</span></div>
+      <div class="lg"><span><i></i>Aktuell 34,2 °C</span><span><i class="d"></i>Beräknad 34,6 °C</span></div>
+      <h3>Golvvärme · strecket visar inställt värde</h3>
+      <div class="rng">
+        <span>Entré</span><span class="t"><i style="left:0;width:64%"></i><b style="left:20%"></b></span><span class="val">26 °C · mål 15</span>
+        <span>Stora badrummet</span><span class="t"><i style="left:0;width:44%"></i></span><span class="val">21 °C · av</span>
+        <span>Fyrvakten badrum</span><span class="t"><i style="left:0;width:76%"></i><b style="left:80%"></b></span><span class="val">29 °C · mål 30</span>
+        <span>Gamla badrummet</span><span class="t"><i style="left:0;width:60%"></i><b style="left:40%"></b></span><span class="val">25 °C · mål 20</span>
+      </div>
+      <h3>Frostskydd</h3>
+      <div class="rng">
+        <span>Redskapsboden</span><span class="t"><i style="left:0;width:42%"></i><b style="left:35%"></b></span><span class="val">8,4 °C · mål 7</span>
+        <span>Bastuflotten</span><span class="t"><i style="left:0;width:34%"></i><b style="left:35%"></b></span><span class="val">6,8 °C · mål 7</span>
+      </div>
+    </div>
+
+    <div class="dv d-water" id="dv-water" data-title="Vatten" data-icon="drop" hidden>
+      <div style="display:flex;gap:18px;align-items:center">
+        <div class="tank" style="width:90px;height:120px"><div class="f" style="height:92%"><svg viewBox="0 0 88 8" preserveAspectRatio="none" aria-hidden="true"><path d="M0 4 Q11 0 22 4 T44 4 T66 4 T88 4 V8 H0Z" class="f-c" fill-opacity=".9"/></svg></div></div>
+        <div class="big" style="flex-direction:column;align-items:flex-start"><b>1 840<small>av 2 000 L</small></b><span class="tag">Full · 92 %</span></div>
+      </div>
+      <h3>Avsaltning</h3>
+      <div class="kp">
+        <div><b>Vilar</b><span>Startar själv vid behov</span></div><div><b>356 L</b><span>Producerat idag</span></div>
+        <div><b>2 h 02 min</b><span>Drifttid idag</span></div><div><b>0 L/h</b><span>Flöde nu</span></div>
+      </div>
+      <p class="note">Produktionsvärdena är exempel tills flödesmätaren är på plats.</p>
+    </div>
+
+    <div class="dv d-climate" id="dv-climate" data-title="Klimat" data-icon="temp" hidden>
+      <div class="vs">
+        <div class="d-in"><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span><small>Inne</small><b>25,4 °C</b></div>
+        <div class="mid"><b>6,8 °C</b><small>varmare inne</small></div>
+        <div class="d-out"><span class="ib"><svg class="ic"><use href="#i-sun"/></svg></span><small>Ute</small><b>18,6 °C</b></div>
+      </div>
+
+      <section class="zone d-in">
+        <div class="zh"><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span><span><b>Inne</b><small>Stora huset</small></span><span class="tag">Normalt</span></div>
+        <div class="kp">
+          <div><b>48 %</b><span>Luftfuktighet · bra mellan 30 och 60</span></div><div><b>25,2 °C</b><span>Känns som</span></div>
+          <div><b>13,6 °C</b><span>Daggpunkt</span></div><div><b>24,4 till 25,6</b><span>Idag, lägst till högst</span></div>
+          <div><b>24,3 till 26,0</b><span>Igår, lägst till högst</span></div>
+        </div>
+        <h3>Rum</h3>
+        <div id="rooms-dv" class="roomlist"></div>
+        <p class="note">Strecket visar 17 °C. Rum under gränsen markeras.</p>
+        <h3>Luft inne · källaren</h3>
+        <div class="kp"><div><b>Ingen data</b><span>CO₂</span></div><div><b>Ingen data</b><span>Partiklar</span></div></div>
+      </section>
+
+      <section class="zone d-out">
+        <div class="zh"><span class="ib"><svg class="ic"><use href="#i-sun"/></svg></span><span><b>Ute</b><small>Väderstationen</small></span><span class="tag">God luft</span></div>
+        <div class="ntc"><span class="ib"><svg class="ic"><use href="#i-alert"/></svg></span><span><b>SMHI: risk för vattenbrist</b><span>Grundvatten och vattendrag, gäller sedan 7 juli.</span></span></div>
+        <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+          <svg class="cps" width="120" height="120" viewBox="0 0 110 110" role="img" aria-label="Vinden kommer från nordväst, 326 grader" style="flex:none">
+            <circle cx="55" cy="55" r="40" fill="none" class="k-ink" stroke-opacity=".2" stroke-width="1.5"/>
+            <text x="55" y="11">N</text><text x="104" y="59">Ö</text><text x="55" y="108">S</text><text x="6" y="59">V</text>
+            <g transform="rotate(326 55 55)"><line x1="55" y1="17" x2="55" y2="40" stroke-width="2.5" stroke-linecap="round" style="stroke:var(--c)"/><path d="M55 50 l-7 -13 h14 z" style="fill:var(--c)"/></g>
+            <circle cx="55" cy="55" r="3" style="fill:var(--ink)"/>
+          </svg>
+          <div style="flex:1 1 200px;display:flex;flex-direction:column;gap:10px">
+            <div class="big"><b>2,1<small>m/s</small></b><span>från nordväst · byar 2,5</span></div>
+            <div class="row d-water"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span>Havet<em>0,6 °C kallare än luften</em></span><span>18,0 °C</span></div>
+          </div>
+        </div>
+        <div class="kp">
+          <div><b>18,6 °C</b><span>Känns som</span></div><div><b>+3,0 °C</b><span>Mot igår</span></div>
+          <div><b>75 %</b><span>Luftfuktighet · −12 % mot igår</span></div><div><b>13,9 °C</b><span>Daggpunkt</span></div>
+          <div><b>1 027,9 hPa</b><span>Lufttryck · −0,1 per h</span></div><div><b>UV 4</b><span>Måttligt · 59 250 lux</span></div>
+          <div><b>0,0 mm</b><span>Regn idag · 157,6 i år</span></div><div><b>35</b><span>Blixtar senaste dygnet · närmast 24 km</span></div>
+        </div>
+        <h3>Temperatur, lägst till högst · strecket är medel</h3>
+        <div class="rng">
+          <span>Idag</span><span class="t"><i style="left:51.5%;width:21.5%"></i><b style="left:58.25%"></b></span><span class="val">10,6 till 19,2 °C</span>
+          <span>Igår</span><span class="t"><i style="left:51.5%;width:24.25%"></i><b style="left:64%"></b></span><span class="val">10,6 till 20,3 °C</span>
+          <span>Vecka</span><span class="t"><i style="left:51.5%;width:24.25%"></i><b style="left:65.25%"></b></span><span class="val">10,6 till 20,3 °C</span>
+          <span>Månad</span><span class="t"><i style="left:51.5%;width:42.5%"></i><b style="left:68.5%"></b></span><span class="val">10,6 till 27,6 °C</span>
+          <span>År</span><span class="t"><i style="left:5.75%;width:88.25%"></i><b style="left:53.25%"></b></span><span class="val">−7,7 till 27,6 °C</span>
+        </div>
+        <h3>Luft ute · PM2.5</h3>
+        <div class="big"><b>4,1<small>µg/m³</small></b><span>snitt 24 h 5,0</span><span class="tag">God</span></div>
+        <div><div class="scale up"><i style="left:7.5%"></i></div><div class="ticks"><span>0</span><span>12</span><span>35</span><span>55 µg/m³</span></div></div>
+      </section>
+    </div>
+
+<div class="dv d-safe" id="dv-safe" data-title="Säkerhet" data-icon="lock" hidden>
+      <h3>Dörrar</h3>
+      <div class="rows">
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span>Huvudbyggnad</span><span class="tag">Låst</span></div>
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span>Gamla flygeln</span><span class="tag">Låst</span></div>
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span>Källaren</span><span class="tag">Låst</span></div>
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span>Båthuset entré</span><span class="tag">Låst</span></div>
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span>Båthuset gästrum</span><span class="tag">Låst</span></div>
+      </div>
+      <h3>Läckagevakt</h3>
+      <div class="rows d-none">
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span>Teknikrum</span><span class="tag none">Ingen data</span></div>
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span>Avsaltning</span><span class="tag none">Ingen data</span></div>
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span>Tvättstuga</span><span class="tag none">Ingen data</span></div>
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span>Kökshandfat</span><span class="tag none">Ingen data</span></div>
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-drop"/></svg></span><span>Övre badrum</span><span class="tag none">Ingen data</span></div>
+      </div>
+      <h3>Kameror och nätverk</h3>
+      <div class="rows d-none">
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-cam"/></svg></span><span>Kameror</span><span class="tag none">Ingen data</span></div>
+        <div class="row"><span class="ib"><svg class="ic"><use href="#i-wifi"/></svg></span><span>Nätverk CV10</span><span class="tag none">Ingen data</span></div>
+      </div>
+    </div>
+
+    <div class="dv" id="dv-system" data-title="System" data-icon="list" hidden>
+      <div class="kp"><div><b>7 av 10</b><span>System rapporterar</span></div><div><b>3</b><span>Tysta</span></div></div>
+      <h3>Källor</h3>
+      <div class="rows">
+        <div class="row d-el"><span class="ib"><svg class="ic"><use href="#i-bolt"/></svg></span><span>Tibber Pulse<em>el, faser</em></span><span class="tag">Rapporterar</span></div>
+        <div class="row d-el"><span class="ib"><svg class="ic"><use href="#i-bolt"/></svg></span><span>Schneider Wiser<em>kretsar</em></span><span class="tag">Rapporterar</span></div>
+        <div class="row d-heat"><span class="ib"><svg class="ic"><use href="#i-flame"/></svg></span><span>NIBE S1256-18R<em>värmepump</em></span><span class="tag">Rapporterar</span></div>
+        <div class="row d-heat"><span class="ib"><svg class="ic"><use href="#i-heat"/></svg></span><span>Plejd<em>golvvärme</em></span><span class="tag">Rapporterar</span></div>
+        <div class="row d-climate"><span class="ib"><svg class="ic"><use href="#i-wind"/></svg></span><span>Ambient Weather<em>väder, hav</em></span><span class="tag">Rapporterar</span></div>
+        <div class="row d-safe"><span class="ib"><svg class="ic"><use href="#i-lock"/></svg></span><span>Yale Doorman<em>lås</em></span><span class="tag">Rapporterar</span></div>
+        <div class="row d-none"><span class="ib"><svg class="ic"><use href="#i-cam"/></svg></span><span>UniFi Protect<em>läckage, kameror, rum</em></span><span class="tag none">Ingen data</span></div>
+        <div class="row d-none"><span class="ib"><svg class="ic"><use href="#i-wifi"/></svg></span><span>UniFi Network<em>nätverk</em></span><span class="tag none">Ingen data</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+// drawn archipelago backdrop: islands with spruce silhouettes, generated once, coloured by the theme tokens
+(function(){
+  let seed = 11; const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+  const NS = 'http://www.w3.org/2000/svg';
+  function island(x0, x1, base, h, n, tmin, tmax){
+    const v = [], ground = t => base - h * Math.pow(Math.sin(Math.PI * t), .7);
+    for (let i = 0; i <= 48; i++) { const t = i / 48; v.push([x0 + (x1 - x0) * t, ground(t) + (rnd() - .5) * h * .06]); }
+    for (let i = 0; i < n; i++) {
+      const t = .05 + rnd() * .9, x = x0 + (x1 - x0) * t, gy = ground(t), th = tmin + rnd() * (tmax - tmin), w = th * .17 + 2;
+      v.push([x - w, gy + 2], [x - w * .45, gy - th * .5], [x - w * .62, gy - th * .5], [x, gy - th], [x + w * .62, gy - th * .5], [x + w * .45, gy - th * .5], [x + w, gy + 2]);
+    }
+    const out = []; let i = 0;
+    // keep each tree's seven points together while ordering everything left to right
+    const groups = v.slice(0, 49).map(p => [p]); for (i = 49; i < v.length; i += 7) groups.push(v.slice(i, i + 7));
+    groups.sort((a, b) => a[0][0] - b[0][0]).forEach(g => g.forEach(p => out.push(p[0].toFixed(1) + ' ' + p[1].toFixed(1))));
+    return 'M' + x0 + ' ' + base + ' L' + out.join(' L') + ' L' + x1 + ' ' + base + ' Z';
+  }
+  function add(id, d, base){
+    const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); document.getElementById(id).appendChild(p);
+    if (base) { const r = p.cloneNode(); r.setAttribute('transform', 'translate(0 ' + (2 * base) + ') scale(1 -1)'); r.setAttribute('class', document.getElementById(id).getAttribute('class')); document.getElementById('ls-refl').appendChild(r); }
+  }
+  add('ls-far', island(-80, 620, 522, 34, 46, 10, 24));
+  add('ls-far', island(700, 1010, 522, 20, 22, 8, 18));
+  add('ls-far', island(1260, 1700, 522, 40, 40, 10, 26));
+  add('ls-mid', island(330, 980, 552, 60, 44, 22, 50), 552);
+  add('ls-mid', island(1380, 1760, 560, 52, 26, 22, 46), 560);
+  add('ls-near', island(-220, 470, 655, 120, 30, 60, 130), 655);
+  add('ls-near', island(1120, 1500, 700, 46, 9, 40, 90), 700);
+  const rip = document.getElementById('ls-rip');
+  for (let i = 0; i < 26; i++) { const y = 540 + rnd() * 330, x = rnd() * 1500, w = 40 + rnd() * 220, l = document.createElementNS(NS, 'line');
+    l.setAttribute('x1', x); l.setAttribute('x2', x + w); l.setAttribute('y1', y); l.setAttribute('y2', y); l.setAttribute('class', 'ls-rip'); rip.appendChild(l); }
+})();
+</script>
+
+<script>
+const dw = document.getElementById('dw'), dvs = [...dw.querySelectorAll('.dv')], dvClose = document.getElementById('dv-close');
+document.getElementById('dv-heat').prepend(document.getElementById('hp'));
+let dvFrom = null;
+function openDv(key, from){
+  dvs.forEach(v => { v.hidden = v.id !== 'dv-' + key; });
+  const v = document.getElementById('dv-' + key);
+  document.getElementById('dv-title').textContent = v.dataset.title;
+  document.getElementById('dv-icon').setAttribute('href', '#i-' + v.dataset.icon);
+  document.getElementById('dv-badge').className = 'ib d-' + (key === 'system' ? 'none' : key);
+  dw.querySelector('.drawer').scrollTop = 0;
+  dvPage.hidden = key !== 'climate' && key !== 'el'; dw.dataset.key = key;
+  dw.classList.add('open'); dvFrom = from; dvClose.focus();
+}
+function closeDv(){ dw.classList.remove('open'); if (dvFrom) dvFrom.focus(); }
+dvClose.addEventListener('click', closeDv);
+dw.querySelector('.scrim').addEventListener('click', closeDv);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && dw.classList.contains('open')) closeDv(); });
+[['.say.d-el','el'],['.say.d-heat','heat'],['.say.d-water','water'],['.say.d-climate','climate'],['.say.d-safe','safe'],
+ ['.det.d-heat','heat'],['.det.d-el','el'],['.det:not([class*="d-"])','system'],['#rooms','climate'],['.gauge','el']].forEach(([sel, key]) => {
+  const el = document.querySelector('.shell ' + sel); if (!el) return;
+  el.classList.add('go'); el.tabIndex = 0; el.setAttribute('role', 'button');
+  el.addEventListener('click', () => openDv(key, el));
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDv(key, el); } });
+});
+
+// climate adjustment: change, then confirm. Nothing is sent in the sketch.
+let adjCur = 0, adjNew = 0;
+const adjFmt = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v);
+function adjDraw(){
+  document.getElementById('adj-val').textContent = adjFmt(adjNew);
+  document.getElementById('adj-mark').style.left = ((adjNew + 10) / 20 * 100) + '%';
+  document.getElementById('adj-minus').disabled = adjNew <= -10;
+  document.getElementById('adj-plus').disabled = adjNew >= 10;
+  document.getElementById('adj-bar').hidden = adjNew === adjCur;
+  document.getElementById('adj-msg').textContent = 'Ändra från ' + adjFmt(adjCur) + ' till ' + adjFmt(adjNew) + '?';
+  document.getElementById('adj-state').textContent = adjCur === 0 ? 'Standardläge' : 'Justerad ' + adjFmt(adjCur);
+}
+document.getElementById('adj-minus').addEventListener('click', () => { adjNew--; adjDraw(); });
+document.getElementById('adj-plus').addEventListener('click', () => { adjNew++; adjDraw(); });
+document.getElementById('adj-undo').addEventListener('click', () => { adjNew = adjCur; adjDraw(); });
+document.getElementById('adj-send').addEventListener('click', () => {
+  adjCur = adjNew; adjDraw();
+  document.getElementById('adj-note').textContent = 'Sparat i skissen som ' + adjFmt(adjCur) + '. I den riktiga appen skickas värdet till värmepumpen och bekräftas när pumpen svarar.';
+});
+
+// pages and navigation: Översikt and Klimat are pages, the other tabs open their panel
+const pages = {home: document.getElementById('pg-home'), energi: document.getElementById('pg-energi'), klimat: document.getElementById('pg-klimat')};
+const navTabs = [...document.querySelectorAll('.nav span')];
+function showPage(name){
+  Object.entries(pages).forEach(([k, el]) => { el.hidden = k !== name; });
+  navTabs.forEach((t, n) => { if (({home: 0, energi: 1, klimat: 2})[name] === n) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current'); });
+  scrollTo(0, 0);
+  if (name === 'home' && typeof lockInsHeight === 'function') lockInsHeight();
+}
+[['home'], ['energi'], ['klimat'], ['dv', 'heat'], ['dv', 'safe'], ['dv', 'system']].forEach((act, n) => {
+  const t = navTabs[n]; t.tabIndex = 0; t.setAttribute('role', 'button');
+  const go = () => act[0] === 'dv' ? openDv(act[1], t) : showPage(act[0]);
+  t.addEventListener('click', go);
+  t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+});
+const dvPage = document.getElementById('dv-page');
+dvPage.addEventListener('click', () => { dw.classList.remove('open'); showPage(dw.dataset.key === 'el' ? 'energi' : 'klimat'); });
+
+const root = document.documentElement, bgBtn = document.getElementById('bg-toggle');
+const palBtns = [...document.querySelectorAll('[data-pal]')];
+function look(pal, bg, save){
+  root.dataset.palette = pal; root.dataset.bg = bg;
+  palBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pal === pal)));
+  bgBtn.setAttribute('aria-pressed', String(bg !== 'none'));
+  bgBtn.textContent = 'Bakgrund: ' + ({orb: 'Sken', scene: 'Skärgård', none: 'Av'})[bg];
+  if (save) { try { localStorage.setItem('look', pal + ':' + bg); } catch (e) {} }
+}
+let saved = 'a:orb';
+try { saved = localStorage.getItem('look') || saved; } catch (e) {}
+look(/^[a-f]:(orb|scene|none)$/.test(saved) ? saved[0] : 'a', /^[a-f]:(orb|scene|none)$/.test(saved) ? saved.slice(2) : 'orb', false);
+palBtns.forEach(b => b.addEventListener('click', () => look(b.dataset.pal, root.dataset.bg, true)));
+bgBtn.addEventListener('click', () => look(root.dataset.palette, ({orb: 'scene', scene: 'none', none: 'orb'})[root.dataset.bg], true));
+
+const sv =(n, d) => n.toFixed(d).replace('.', ',');
+const spot = [.692,.653,.639,.635,.614,.635,.662,.695,.689,.627,.515,.425,.337,.32,.332,.464,.862,.954,1.043,.995,.924,.323,.124,.056];
+const MAX = 1.2, NOW = 20;
+const px = h => h / 23 * 240, py = v => 100 - v / MAX * 100;
+const d = spot.map((v, h) => (h ? 'L' : 'M') + px(h).toFixed(1) + ' ' + py(v).toFixed(1)).join(' ');
+document.getElementById('line').setAttribute('d', d);
+document.getElementById('area').setAttribute('d', d + ' L240 100 L0 100 Z');
+
+const plot = document.getElementById('plot');
+const x = document.createElement('div'); x.className = 'x';
+const p = document.createElement('div'); p.className = 'p';
+const tip = document.createElement('div'); tip.className = 'tip';
+plot.append(x, p, tip);
+function mark(h){
+  const l = h / 23 * 100, b = spot[h] / MAX * 100;
+  x.style.left = l + '%';
+  p.style.left = l + '%'; p.style.bottom = b + '%';
+  tip.style.left = Math.min(82, Math.max(18, l)) + '%'; tip.style.bottom = b + '%';
+  tip.textContent = 'kl ' + String(h).padStart(2, '0') + ' · ' + sv(spot[h], 2) + ' kr';
+}
+mark(NOW);
+plot.addEventListener('pointermove', e => {
+  const r = plot.getBoundingClientRect();
+  mark(Math.max(0, Math.min(23, Math.round((e.clientX - r.left) / r.width * 23))));
+});
+plot.addEventListener('pointerleave', () => mark(NOW));
+
+const mini = document.getElementById('mini');
+spot.forEach((v, h) => {
+  const i = document.createElement('i');
+  i.style.height = (v / 1.04 * 100) + '%';
+  if (h === NOW) i.className = 'cur';
+  i.title = 'kl ' + String(h).padStart(2, '0') + ' · ' + sv(v, 2) + ' kr';
+  mini.appendChild(i);
+});
+
+const circuits = [['Värmekabel',19.1,'var(--c-el)'],['Avsaltning',16.5,'var(--c-water)'],['Värmepump',16.5,'var(--c-heat)'],['Båthuset',13.0,'var(--c-climate)'],['Stora huset',12.1,'var(--c-safe)'],['Övrigt, omätt',9.5,'var(--c-none)']];
+const stack = document.getElementById('stack'), leg = document.getElementById('leg');
+circuits.forEach(([n, k, c]) => {
+  const s = document.createElement('i');
+  s.style.flex = k; s.style.setProperty('--c', c); s.title = n + ' · ' + sv(k, 1) + ' kWh';
+  stack.appendChild(s);
+  leg.insertAdjacentHTML('beforeend',
+    '<i style="--c:' + c + '"></i><span>' + n + '</span><span>' + sv(k, 1) + ' kWh</span><span class="k">' + Math.round(k / 86.8 * 100) + ' %</span>');
+});
+
+const mini2 = document.getElementById('mini2');
+spot.forEach((v, h) => {
+  const i = document.createElement('i');
+  i.style.height = (v / 1.04 * 100) + '%';
+  if (h === NOW) i.className = 'cur';
+  i.title = 'kl ' + String(h).padStart(2, '0') + ' · ' + sv(v, 2) + ' kr';
+  mini2.appendChild(i);
+});
+// third value: last year's daily average for that month from the invoice (only October is known in this sketch)
+const days = [['26 sep',124.9],['27 sep',104.3],['28 sep',83.9],['29 sep',75.2],['30 sep',77.8],['1 okt',76.3,128.4],['2 okt',100.4,128.4],['Idag',86.8,128.4]];
+const daysEl = document.getElementById('days');
+days.forEach(([l, k, fj]) => daysEl.insertAdjacentHTML('beforeend',
+  '<div><span>' + Math.round(k) + '</span><span class="bw"><i style="height:' + (k / 135 * 100) + '%"></i>' +
+  (fj ? '<u style="bottom:' + (fj / 135 * 100) + '%"></u>' : '') + '</span><span>' + l + '</span></div>'));
+
+const strip = document.getElementById('strip');
+spot.forEach((v, h) => {
+  const i = document.createElement('i');
+  i.style.opacity = (.15 + .85 * v / 1.04).toFixed(2);
+  if (h === NOW) { i.className = 'cur'; i.style.opacity = 1; }
+  i.title = 'kl ' + String(h).padStart(2, '0') + ' · ' + sv(v, 2) + ' kr';
+  strip.appendChild(i);
+});
+
+const flC = [], flA = [];
+for (let t = 0; t <= 48; t++) {
+  const c = 35.6 + 2 * Math.cos((t / 2 - 8) / 24 * 2 * Math.PI), a = c + .35 * Math.sin(t * .9) - .15;
+  const x = (t / 48 * 300).toFixed(1);
+  flC.push(x + ' ' + (100 - (c - 30) * 10).toFixed(1)); flA.push(x + ' ' + (100 - (a - 30) * 10).toFixed(1));
+}
+document.getElementById('fl-c').setAttribute('d', 'M' + flC.join(' L'));
+document.getElementById('fl-a').setAttribute('d', 'M' + flA.join(' L'));
+
+const segs = document.getElementById('segs'), ELPATRON_KW = 0;
+[segs, document.getElementById('segs2')].forEach(box => {
+  for (let n = 1; n <= 18; n++) { const s = document.createElement('i'); if (n <= ELPATRON_KW) s.className = 'on'; box.appendChild(s); }
+});
+
+// example live curve: W around the current draw, newest to the right
+let live = [6.9,7.0,7.2,7.1,6.8,6.7,6.9,7.3,7.6,7.4,7.2,7.0,6.9,7.1,7.4,7.5,7.3,7.0,6.8,6.9,7.1,7.2,7.4,7.3,7.1,7.0,7.2,7.3,7.2,7.17];
+function drawLive(){
+  const lo = 6.2, hi = 8.0;
+  const pts = live.map((v, i) => (i / (live.length - 1) * 200).toFixed(1) + ' ' + (40 - (v - lo) / (hi - lo) * 40).toFixed(1));
+  document.getElementById('spk-l').setAttribute('d', 'M' + pts.join(' L'));
+  document.getElementById('spk-a').setAttribute('d', 'M' + pts.join(' L') + ' L200 40 L0 40 Z');
+  const now = live[live.length - 1];
+  document.querySelectorAll('[data-live="kw"]').forEach(el => { el.textContent = sv(now, 1); });
+  document.querySelectorAll('[data-live="w"]').forEach(el => { el.textContent = String(Math.round(now * 1000)).replace(/\B(?=(\d{3})+$)/g, ' '); });
+}
+drawLive();
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => {
+  const last = live[live.length - 1];
+  live = live.slice(1).concat(Math.max(6.4, Math.min(7.8, last + (Math.random() - .5) * .4)));
+  drawLive();
+}, 5000);
+
+// d = domain colour, i = icon, c = category, t = warn | info | good, a/b = [label, value, bar %]
+const insights = [
+  {d:'heat', i:'heat', c:'Energi', t:'warn', s:'Värmekabeln drar mest av allt idag, fast det är 18,6 °C ute', a:['Värmekabel','19,1 kWh',100], b:['Värmepump','16,5 kWh',86]},
+  {d:'el', i:'bolt', c:'Energi', t:'info', s:'Elpriset just nu är 15 gånger dagens lägsta', a:['Nu, kl 20','0,92 kr',88], b:['Lägst idag','0,06 kr',6]},
+  {d:'el', i:'bolt', c:'Energi', t:'info', s:'Högre pris står för 90 % av årets kostnadsökning, inte högre förbrukning', a:['Priseffekt','37 998 kr',100], b:['Volymeffekt','4 040 kr',11]},
+  {d:'el', i:'bolt', c:'Energi', t:'good', s:'Årets förbrukning ligger strax under fjolårets takt', a:['Andel av 2025 års kWh','72 %',72], b:['Andel av året som gått','76 %',76]},
+  {d:'el', i:'bolt', c:'Energi', t:'info', s:'Fas L3 bär fyra gånger mer än L2', a:['L3','17,8 A',51], b:['L2','4,1 A',12]},
+  {d:'heat', i:'flame', c:'Värme', t:'warn', s:'Värmepumpen värmer huset fast det redan är 25,4 °C inne', a:['Inne','25,4 °C',85], b:['Ute','18,6 °C',62]},
+  {d:'heat', i:'snow', c:'Värme', t:'info', s:'Köldbäraren har 6,6 °C kvar till värmepumpens larmgräns, och vintern har inte börjat', a:['Nu','−1,4 °C',12], b:['Pumpens larm','−8,0 °C',67]},
+  {d:'heat', i:'heat', c:'Värme', t:'warn', s:'Golvet i entrén är 11 °C varmare än inställt', a:['Golv','26 °C',74], b:['Inställt','15 °C',43]},
+  {d:'heat', i:'snow', c:'Värme', t:'warn', s:'Bastuflotten visar 6,8 °C när det är 18,6 °C ute. Kontrollera givaren', a:['Givare','6,8 °C',23], b:['Ute','18,6 °C',62]},
+  {d:'water', i:'drop', c:'Vatten', t:'good', s:'160 liter kvar till full tank, avsaltningen har gjort 356 liter idag', a:['I tanken','1 840 L',92], b:['Producerat idag','356 L',18]},
+  {d:'climate', i:'wind', c:'Klimat', t:'warn', s:'35 blixtnedslag senaste dygnet, närmast 24 km bort', a:['Senaste dygnet','35',100], b:['Senaste timmen','0',0]},
+  {d:'none', i:'list', c:'Data', t:'warn', s:'3 av 10 system rapporterar inte, så läget där är okänt', a:['Rapporterar','7',70], b:['Tysta','3',30]}
+];
+const TAG = {warn:['warn','Heads up'], info:['info','Jämförelse'], good:['','Bra läge']};
+const ins = document.getElementById('ins'), chips = document.getElementById('chips');
+insights.forEach(n => ins.insertAdjacentHTML('beforeend',
+  '<article class="card in d-' + n.d + '" data-cat="' + n.c + '"><header><span class="ib"><svg class="ic"><use href="#i-' + n.i + '"/></svg></span>' + n.c +
+  '<span class="tag ' + TAG[n.t][0] + '">' + TAG[n.t][1] + '</span></header><p>' + n.s + '</p><div class="cmp">' +
+  '<span>' + n.a[0] + '</span><span class="tr"><i style="width:' + n.a[2] + '%"></i></span><span class="val">' + n.a[1] + '</span>' +
+  '<span>' + n.b[0] + '</span><span class="tr b"><i style="width:' + n.b[2] + '%"></i></span><span class="val">' + n.b[1] + '</span></div></article>'));
+['Alla', ...new Set(insights.map(n => n.c))].forEach((c, idx) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.id = 'chip-' + idx; b.setAttribute('aria-pressed', String(idx === 0));
+  b.textContent = c + (c === 'Alla' ? '' : ' ' + insights.filter(n => n.c === c).length);
+  b.addEventListener('click', () => {
+    chips.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    ins.querySelectorAll('.in').forEach(el => { el.hidden = c !== 'Alla' && el.dataset.cat !== c; });
+  });
+  chips.appendChild(b);
+});
+// keep the section as tall as the full list, so filtering never makes the page jump
+function lockInsHeight(){
+  const cards = [...ins.querySelectorAll('.in')], was = cards.map(el => el.hidden);
+  cards.forEach(el => { el.hidden = false; });
+  ins.style.minHeight = '';
+  ins.style.minHeight = ins.offsetHeight + 'px';
+  cards.forEach((el, n) => { el.hidden = was[n]; });
+}
+lockInsHeight();
+addEventListener('resize', lockInsHeight);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockInsHeight);
+
+// Energi page. Tomorrow's prices are real (SE3, 4 Oct 2026). kWh per day is read from the current dashboard's log, temperatures from Open-Meteo.
+const tmrw = [.029,.022,.028,.113,.441,.574,.619,.653,.744,.766,.732,.446,.401,.36,.425,.531,.835,1.129,1.187,1.045,.667,.17,.014,.003];
+const tmr = document.getElementById('tmr');
+tmrw.forEach((v, h) => {
+  const i = document.createElement('i');
+  i.style.height = Math.max(1.5, v / 1.187 * 100) + '%';
+  if (v < .2) i.className = 'lo'; else if (v > .8) i.className = 'hi';
+  i.title = 'kl ' + String(h).padStart(2, '0') + ' · ' + sv(v, 2) + ' kr';
+  tmr.appendChild(i);
+});
+const kwhLog = {'07-28':84.5,'07-29':92.3,'07-30':90.9,'07-31':81.2,'08-01':72.8,'08-02':73.9,'08-03':82.1,'08-04':87.6,'08-05':83.8,'08-06':74.7,'08-07':70.5,'08-08':76.5,'08-09':87.1,'08-10':91.8,'08-11':86.6,'08-12':78.0,'08-13':75.9,'08-14':82.8,'08-15':90.6,'08-16':90.2,'08-17':81.0,'08-18':71.9,'08-19':71.8,'08-20':80.1,'08-21':87.1,'08-22':85.3,'08-23':76.9,'08-24':72.0,'08-25':76.9,'09-26':124.9,'09-27':104.3,'09-28':83.9,'09-29':75.2,'09-30':77.8,'10-01':76.3,'10-02':100.4,'10-03':86.8};
+const tempLog = {'07-28':19.6,'07-29':19.7,'07-30':21.5,'07-31':21.3,'08-01':18.7,'08-02':18.0,'08-03':18.2,'08-04':18.7,'08-05':19.4,'08-06':20.4,'08-07':18.0,'08-08':18.6,'08-09':19.0,'08-10':19.0,'08-11':16.3,'08-12':16.2,'08-13':19.2,'08-14':19.9,'08-15':20.7,'08-16':18.2,'08-17':16.5,'08-18':16.6,'08-19':16.3,'08-20':16.2,'08-21':15.5,'08-22':15.8,'08-23':17.0,'08-24':16.4,'08-25':16.3,'09-26':12.6,'09-27':11.3,'09-28':14.1,'09-29':14.3,'09-30':13.4,'10-01':14.8,'10-02':14.7,'10-03':13.9};
+const measured = d => d >= '09-26';
+const MON = ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+const dfmt = d => Number(d.slice(3)) + ' ' + MON[Number(d.slice(0, 2)) - 1];
+
+// scatter: straight-line fit, a band for "normal", and labels on the days that stand out
+const sc = document.getElementById('sc'), pts = Object.keys(kwhLog).map(d => ({d, k: kwhLog[d], t: tempLog[d]}));
+const mt = pts.reduce((a, p) => a + p.t, 0) / pts.length, mk = pts.reduce((a, p) => a + p.k, 0) / pts.length;
+const slope = pts.reduce((a, p) => a + (p.t - mt) * (p.k - mk), 0) / pts.reduce((a, p) => a + (p.t - mt) ** 2, 0);
+const fit = t => mk + slope * (t - mt), BAND = 12;
+const yy = k => (100 - (k - 60) / 70 * 100).toFixed(1);
+document.getElementById('sc-line').setAttribute('d', 'M0 ' + yy(fit(10)) + ' L100 ' + yy(fit(22)));
+document.getElementById('sc-band').setAttribute('points', '0,' + yy(fit(10) + BAND) + ' 100,' + yy(fit(22) + BAND) + ' 100,' + yy(fit(22) - BAND) + ' 0,' + yy(fit(10) - BAND));
+let worst = null;
+pts.forEach(p => {
+  const over = p.k - fit(p.t), m = measured(p.d), hi = m && over > BAND, now = p.d === '10-03';
+  if (hi && (!worst || over > worst.over)) worst = {...p, over};
+  const el = document.createElement('div');
+  el.className = 'dot' + (m ? '' : ' est') + (hi ? ' hi' : '') + (now ? ' now' : '');
+  el.style.left = ((p.t - 10) / 12 * 100) + '%'; el.style.bottom = ((p.k - 60) / 70 * 100) + '%';
+  el.title = dfmt(p.d) + ' · ' + sv(p.k, 1) + ' kWh · ' + sv(p.t, 1) + ' °C';
+  sc.appendChild(el);
+  if (hi || now) {
+    const l = document.createElement('span'); l.className = 'dl';
+    l.style.left = el.style.left; l.style.bottom = el.style.bottom;
+    l.textContent = now ? 'Idag' : dfmt(p.d);
+    sc.appendChild(l);
+  }
+});
+document.getElementById('sc-tags').innerHTML = worst
+  ? '<span>' + dfmt(worst.d) + ' drog ' + Math.round(worst.over) + ' kWh mer än väntat för ' + sv(worst.t, 1) + ' °C</span><span>Idag ligger inom det normala</span>'
+  : '<span>Inga dygn sticker ut</span>';
+
+// day by day: plain bars with an axis, the average, and the highest and lowest day called out
+const dd = document.getElementById('dd'), logged = Object.keys(kwhLog);
+const avg = logged.reduce((a, d) => a + kwhLog[d], 0) / logged.length;
+const hiDay = logged.reduce((a, d) => kwhLog[d] > kwhLog[a] ? d : a), loDay = logged.reduce((a, d) => kwhLog[d] < kwhLog[a] ? d : a);
+document.getElementById('dd-kp').innerHTML =
+  '<div><b>' + sv(avg, 0) + ' kWh</b><span>Snitt per dygn</span></div>' +
+  '<div><b>' + sv(kwhLog[hiDay], 0) + ' kWh</b><span>Högst · ' + dfmt(hiDay) + '</span></div>' +
+  '<div><b>' + sv(kwhLog[loDay], 0) + ' kWh</b><span>Lägst · ' + dfmt(loDay) + '</span></div>';
+document.getElementById('dd-avg').style.bottom = (avg / 130 * 100) + '%';
+for (let n = 0; n < 70; n++) {
+  const dt = new Date(Date.UTC(2026, 6, 27 + n)), d = String(dt.getUTCMonth() + 1).padStart(2, '0') + '-' + String(dt.getUTCDate()).padStart(2, '0');
+  const k = kwhLog[d], b = document.createElement('i');
+  if (k === undefined) b.className = 'no';
+  else { b.style.height = (k / 130 * 100) + '%'; b.className = (measured(d) ? '' : 'est') + (d === '10-03' ? ' now' : ''); }
+  b.title = dfmt(d) + (k === undefined ? ' · inget värde' : ' · ' + sv(k, 1) + ' kWh');
+  dd.appendChild(b);
+}
+
+// rooms as read from the live dashboard 4 Oct 00:41. The grouping into buildings is a guess.
+const rooms = [
+  ['Stora huset', [['Övre badrum',27.3,39],['Kökshandfat',26.5,41],['Kök',25.3,50],['Övervåning · Master',25.1,48],['Trappa',24.0,52],['Gamla delen',22.9,57]]],
+  ['Teknik', [['Tvättstuga',25.1,45],['Teknikrum',24.0,44],['Avsaltningsanläggning',17.3,66]]],
+  ['Båthuset och flotten', [['Vardagsrum',22.5,60],['Gästrum',22.3,55],['Bastuflotte',16.5,78]]]
+];
+['rooms-page', 'rooms-dv'].forEach(id => {
+  document.getElementById(id).innerHTML = rooms.map(([g, list]) =>
+    '<p class="lbl">' + g + '</p><div class="rng">' + list.map(([n, t, rh]) =>
+      '<span>' + n + '</span><span class="t"><i style="left:0;width:' + ((t - 10) / 20 * 100) + '%' + (t < 17 ? ';background:var(--warn)' : '') +
+      '"></i><b style="left:35%"></b></span><span class="val">' + sv(t, 1) + ' °C · ' + rh + ' %</span>').join('') + '</div>').join('');
+});
+</script>
+
+
